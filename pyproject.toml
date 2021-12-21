@@ -14,6 +14,7 @@ django-allauth = "^0.47.0"
 sendgrid = "^6.9.3"
 daphne = "^3.0.2"
 dj-database-url = {git = "https://github.com/parrotmac/dj-database-url"}
+django-sendgrid-v5 = "^1.2.0"
 
 [tool.poetry.dev-dependencies]
 black = "^21.12b0"

@@ -270,6 +270,19 @@ django = ">=2.2,<5.0"
 docs = ["sphinx (>=2.4,<3.0)", "sphinx_rtd_theme (>=0.4.3,<0.5.0)", "m2r2 (>=0.2.5,<0.3.0)"]
 
 [[package]]
+name = "django-sendgrid-v5"
+version = "1.2.0"
+description = "An implementation of Django's EmailBackend compatible with sendgrid-python v5+"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+django = ">=1.8"
+python-http-client = ">=3.0.0"
+sendgrid = ">=5.0.0"
+
+[[package]]
 name = "hyperlink"
 version = "21.0.0"
 description = "A featureful, immutable, and correct URL for Python."
@@ -650,7 +663,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "d809c8cac7918063ebd26499664408cbd77fedd891530da874c6a483fbd9a470"
+content-hash = "ddd6b303aa7c0475d64c570aa473d0fa7baca2dc256a3c811b057470a6c2ea16"
 
 [metadata.files]
 asgiref = [
@@ -789,6 +802,10 @@ django-allauth = [
 django-bootstrap-v5 = [
     {file = "django-bootstrap-v5-1.0.7.tar.gz", hash = "sha256:55d3b0bef48a14491eb3429a1839857183c7b61ad1fbad1289a2fa1efedd4c99"},
     {file = "django_bootstrap_v5-1.0.7-py3-none-any.whl", hash = "sha256:49c0c56742874210ae9d8428458960fbcd5c623857bc4bb6a14bcbaa0fca1d3c"},
+]
+django-sendgrid-v5 = [
+    {file = "django-sendgrid-v5-1.2.0.tar.gz", hash = "sha256:c40d41f7379dac6a3543d6bbe9b745f4e72817bb984257f8c806200d50218157"},
+    {file = "django_sendgrid_v5-1.2.0-py2.py3-none-any.whl", hash = "sha256:4476811e750e4cc922441e3f01ec534bb5832998f617898a3823a1bc974237dc"},
 ]
 hyperlink = [
     {file = "hyperlink-21.0.0-py2.py3-none-any.whl", hash = "sha256:e6b14c37ecb73e89c77d78cdb4c2cc8f3fb59a885c5b3f819ff4ed80f25af1b4"},

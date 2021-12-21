@@ -12,8 +12,9 @@ from django.shortcuts import redirect
 from django.template.defaultfilters import pluralize
 from django.urls import reverse
 from django.utils import timezone
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView, FormView
 
+from gifter.forms import InviteParticipantForm
 from gifter.models import Wishlist, Item, Claim, GroupInvitation
 
 
@@ -87,6 +88,11 @@ class GroupListView(LoginRequiredMixin, ListView):
 class GroupDetailView(LoginRequiredMixin, DetailView):
     model = Group
     template_name = 'gifter/group_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(GroupDetailView, self).get_context_data(**kwargs)
+        context['send_invite_form'] = InviteParticipantForm(self.request.GET)
+        return context
 
 
 class GroupDeleteView(LoginRequiredMixin, DeleteView):
@@ -315,3 +321,41 @@ class ProfileLogoutView(LoginRequiredMixin, LogoutView):
 
 def health_check(request):
     return HttpResponse("OK")
+
+
+class SendInviteFormView(FormView):
+    form_class = InviteParticipantForm
+
+    def get_success_url(self):
+        return reverse("group_detail", kwargs={
+            "pk": str(self.request.resolver_match.kwargs['group_pk'])
+        })
+
+    def form_valid(self, form):
+        group = Group.objects.get(id=self.request.resolver_match.kwargs['group_pk'])
+        email_address = form.cleaned_data.get('email_address')
+
+        if group.user_set.filter(email=email_address).count() > 0:
+            messages.add_message(
+                self.request,
+                level=messages.INFO,
+                message=f"{email_address} is already a member of this group!",
+                fail_silently=True,
+            )
+            return super().form_valid(form)
+
+        GroupInvitation.objects.create(
+            destination_email=email_address,
+            sender=self.request.user,
+            target_group=group,
+            http_origin=self.request.META.get("HTTP_ORIGIN"),
+        )
+
+        messages.add_message(
+            self.request,
+            level=messages.SUCCESS,
+            message=f"Successfully invited {email_address}",
+            fail_silently=True,
+        )
+
+        return super().form_valid(form)

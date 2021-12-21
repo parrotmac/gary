@@ -166,6 +166,9 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
@@ -226,6 +229,11 @@ MAILHOG_HOST = os.getenv("MAILHOG_HOST")
 # Let app code check to see if Sendgrid is available
 SENDGRID_ENABLED = False
 
+SENDGRID_EMAIL_INVITE_TEMPLATE = os.getenv("SENDGRID_EMAIL_INVITE_TEMPLATE", "d-7d32f3f48de243c6a5438af162ffc6d5")
+
+# How long before a second email can be sent from a user to a particular email for a particular group
+INVITE_EMAIL_COOLDOWN_PERIOD_MINUTES = os.getenv("INVITE_EMAIL_COOLDOWN_PERIOD_MINUTES", "5")
+
 if SENDGRID_API_KEY:
     SENDGRID_ENABLED = True
     EMAIL_HOST = "smtp.sendgrid.net"
@@ -233,7 +241,7 @@ if SENDGRID_API_KEY:
     EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
     SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 elif MAILHOG_HOST:
     print("Using mailhog", MAILHOG_HOST)

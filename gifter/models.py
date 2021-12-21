@@ -1,3 +1,4 @@
+import hashlib
 import uuid
 import secrets
 
@@ -35,6 +36,30 @@ class CommonBaseClass(models.Model):
 
 class User(AbstractUser, CommonBaseClass):
     nickname = models.CharField(max_length=30, blank=True, null=True)
+
+    @property
+    def display_photo(self):
+        if self.socialaccount_set.count() > 0:
+            social_image = self.socialaccount_set.first().extra_data.get('picture')
+            return social_image
+        if self.email:
+            return f'https://www.gravatar.com/avatar/{hashlib.md5(self.email.encode("utf-8")).hexdigest()}?d=retro'
+        # Return a 'mystery person' if nothing else is available
+        return 'https://www.gravatar.com/avatar/5f4dcc3b5aa765d61d8327deb882cf99?d=mp'
+
+    @property
+    def display_name(self):
+        if self.socialaccount_set.count() > 0:
+            if social_account_name := self.socialaccount_set.first().extra_data.get('name'):
+                return social_account_name
+        if self.first_name:
+            return self.first_name
+        if self.email:
+            return self.email
+        return self.username
+
+    def __str__(self):
+        return self.display_name
 
 
 class Wishlist(CommonBaseClass):
@@ -85,3 +110,5 @@ class GroupInvitation(CommonBaseClass):
     sent_at = models.DateTimeField(blank=True, null=True)
     verified_at = models.DateTimeField(blank=True, null=True)
     resulting_user = models.ForeignKey(User, on_delete=models.DO_NOTHING, blank=True, null=True, related_name='accepted_invitations')
+    http_origin = models.URLField(blank=True, null=True)  # Used when constructing invitation URL
+
