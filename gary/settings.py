@@ -46,6 +46,7 @@ DEBUG = os.getenv("DEBUG", "ENABLED") == "ENABLED"
 
 ALLOWED_HOSTS = get_envvar_list("ALLOWED_HOSTS")
 
+CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
 
 # Application definition
 
