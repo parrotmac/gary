@@ -7,7 +7,7 @@
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
 {% block content %}
-    <div class="card bg-dark">
+    <div class="card bg-dark mt-3">
         <div class="card-body">
             <form class="login form-signin" method="POST" action="{% url 'account_login' %}">
                 <h5 class="card-title">{% trans "Sign In" %}</h5>
@@ -35,9 +35,9 @@
                 {% if redirect_field_value %}
                     <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
                 {% endif %}
+                <button class="btn btn-lg btn-primary btn-block" type="submit">{% trans "Sign In" %}</button>
                 <a style="display: block; margin: 1rem 0" class="btn btn-secondary btn-sm"
                    href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-                <button class="btn btn-lg btn-primary btn-block" type="submit">{% trans "Sign In" %}</button>
                 <p class="mt-5 mb-3 text-muted">&copy; Gary The Christmas Gift Fairy 2021</p>
             </form>
         </div>

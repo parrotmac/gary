@@ -1,3 +1,6 @@
+import re
+from datetime import datetime
+
 from allauth.account.views import LogoutView
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -6,6 +9,7 @@ from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.shortcuts import redirect
+from django.template.defaultfilters import pluralize
 from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
@@ -13,9 +17,63 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from gifter.models import Wishlist, Item, Claim, GroupInvitation
 
 
+# https://djangosnippets.org/snippets/2926/
+def possessive(value):
+    """
+    Add an "'s" or "'" where appropriate on proper nouns to to make them posessive
+    """
+    if re.search(r's$', value):
+        return value + "'"
+    else:
+        return value + "'s"
+
+
 @login_required
 def redirect_to_groups(request):
     return redirect(to='group_list')
+
+
+class GroupCreateView(LoginRequiredMixin, CreateView):
+    model = Group
+    template_name = 'gifter/group_form.html'
+    fields = [
+        'name',
+    ]
+
+    def get_success_url(self):
+        return reverse("group_detail", kwargs={
+            "pk": str(self.object.id)
+        })
+
+    def form_valid(self, form):
+        user = self.request.user
+        form.instance.save()
+        form.instance.user_set.add(user)
+        return super(GroupCreateView, self).form_valid(form)
+
+    def get_initial(self):
+        try:
+            social_family = self.request.user.socialaccount_set.first().extra_data.get('family_name')
+            if social_family:
+                return {
+                    'name': f"{social_family} Family Christmas - {datetime.now().year}"
+                }
+        except Exception:
+            pass
+        return {}
+
+
+class GroupUpdateView(LoginRequiredMixin, UpdateView):
+    model = Group
+    template_name = 'gifter/group_form.html'
+    fields = [
+        'name',
+    ]
+
+    def get_success_url(self):
+        return reverse("group_detail", kwargs={
+            "pk": str(self.object.id)
+        })
 
 
 class GroupListView(LoginRequiredMixin, ListView):
@@ -31,6 +89,14 @@ class GroupDetailView(LoginRequiredMixin, DetailView):
     template_name = 'gifter/group_detail.html'
 
 
+class GroupDeleteView(LoginRequiredMixin, DeleteView):
+    model = Group
+    template_name = "gifter/group_confirm_delete.html"
+
+    def get_success_url(self):
+        return reverse("group_list")
+
+
 class WishlistDetailView(LoginRequiredMixin, DetailView):
     model = Wishlist
     template_name = 'gifter/wishlist_detail.html'
@@ -43,6 +109,64 @@ class WishlistDetailView(LoginRequiredMixin, DetailView):
         context['my_claims'] = Claim.objects.filter(owner=me, item__wishlist=self.object.id)
 
         return context
+
+
+class WishlistCreateView(LoginRequiredMixin, CreateView):
+    model = Wishlist
+    template_name = 'gifter/wishlist_form.html'
+    fields = [
+        'title',
+    ]
+
+    def get_initial(self):
+        name = "My"
+        try:
+            social_given = self.request.user.socialaccount_set.first().extra_data.get('given_name')
+            if social_given:
+                name = social_given
+        except Exception:
+            if self.request.user.first_name:
+                name = self.request.user.first_name
+
+        return {
+            'title': f"{possessive(name)} Wishlist",
+        }
+
+    def get_success_url(self):
+        return reverse("wishlist_detail", kwargs={
+            "group_pk": str(self.object.group.id),
+            "pk": str(self.object.id)
+        })
+
+    def form_valid(self, form):
+        user = self.request.user
+        form.instance.owner = user
+        form.instance.group_id = self.request.resolver_match.kwargs['group_pk']
+        return super(WishlistCreateView, self).form_valid(form)
+
+
+class WishlistUpdateView(LoginRequiredMixin, UpdateView):
+    model = Wishlist
+    template_name = 'gifter/wishlist_form.html'
+    fields = [
+        'title',
+    ]
+
+    def get_success_url(self):
+        return reverse("wishlist_detail", kwargs={
+            "group_pk": str(self.object.group.id),
+            "pk": str(self.object.id)
+        })
+
+
+class WishlistDeleteView(LoginRequiredMixin, DeleteView):
+    model = Wishlist
+    template_name = "gifter/wishlist_confirm_delete.html"
+
+    def get_success_url(self):
+        return reverse("group_detail", kwargs={
+            "pk": self.object.group.id,
+        })
 
 
 class ItemCreateView(LoginRequiredMixin, CreateView):

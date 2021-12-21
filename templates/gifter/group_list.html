@@ -6,6 +6,7 @@
             <li class="breadcrumb-item active" aria-current="page"><a href="{% url "group_list" %}">Groups</a></li>
         </ol>
     </nav>
+    <a href="{% url "group_create" %}" class="btn btn-primary">Create Group</a>
     {% for group in object_list %}
         <div class="card bg-dark mb-2">
             <div class="card-body">

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+{% block content %}
+    {% if object %}
+        <h2>Update Wishlist</h2>
+        <form action="{% url "wishlist_update" group_pk=request.resolver_match.kwargs.group_pk pk=object.pk %}" method="post">
+    {% else %}
+        <h2>Create Wishlist!</h2>
+        <form action="{% url "wishlist_create" group_pk=request.resolver_match.kwargs.group_pk %}" method="post">
+    {% endif %}
+{% csrf_token %}
+    <p>Enter a title for your wishlist, such as <em>Some ideas</em> or <em>Things I *literally* cannot live without</em></p>
+{% bootstrap_form form %}
+{% buttons %}
+    {% if object %}
+        <button type="submit" class="btn btn-primary">Update</button>
+    {% else %}
+        <button type="submit" class="btn btn-primary">Create</button>
+    {% endif %}
+{% endbuttons %}
+</form>
+{% endblock %}

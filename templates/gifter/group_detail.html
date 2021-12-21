@@ -8,11 +8,14 @@
         </ol>
     </nav>
     <h2 class="mt-3">{{ group.name }}</h2>
+    <a href="{% url "wishlist_create" group_pk=group.pk %}" class="btn btn-primary">Create List</a>
     {% for wl in group.wishlist_set.all %}
         <div class="card bg-dark mb-2">
             <div class="card-body">
-                <a href="{% url "wishlist_detail" wl.id %}">{{ wl.title }}</a>
+                <a href="{% url "wishlist_detail" group_pk=group.pk pk=wl.id %}">{{ wl.title }}</a>
             </div>
         </div>
     {% endfor %}
+    <hr />
+    <a href="{% url "group_update" group.pk  %}" class="btn btn-outline-primary">Edit Group</a>
 {% endblock %}

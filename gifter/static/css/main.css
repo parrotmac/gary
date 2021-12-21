@@ -39,4 +39,19 @@ a:link, a:visited {
 
 .socialaccount_providers {
     list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.socialaccount_providers li {
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    justify-content: center;
+}
+
+.form-signin {
+    display: flex;
+    flex-direction: column;
 }

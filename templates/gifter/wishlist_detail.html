@@ -7,8 +7,11 @@
             <div class="card wishlist-page-card mt-3">
                 <div class="card-header wishlist-page-header">
                     <h2>{{ wishlist.title }}</h2>
-                    <a href="{% url 'item_create' wishlist_pk=wishlist.pk %}" class="btn btn-success">Add Item &nbsp;<i
-                            class="bi bi-plus-square-fill"></i></a>
+                    <div class="btn-group">
+                        <a href="{% url "wishlist_delete" group_pk=wishlist.group.pk pk=wishlist.pk %}" class="btn btn-outline-danger">Delete</a>
+                        <a href="{% url 'item_create' wishlist_pk=wishlist.pk %}" class="btn btn-success">Add Item &nbsp;<i
+                                class="bi bi-plus-square-fill"></i></a>
+                    </div>
                 </div>
                 <div class="card-body">
                     {% for wli in wishlist.item_set.all %}

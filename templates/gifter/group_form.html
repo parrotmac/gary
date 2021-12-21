@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+{% block content %}
+    {% if group.pk %}
+        <h2>Update Group</h2>
+        <form action="{% url "group_update" pk=object.pk %}" method="post">
+    {% else %}
+        <h2>Create Group!</h2>
+        <form action="{% url "group_create" %}" method="post">
+    {% endif %}
+{% csrf_token %}
+    <p>Enter a name for the group, such as <em>Griswald Family Christmas 1989</em> or <em>Lily's Birthday</em></p>
+{% bootstrap_form form %}
+{% buttons %}
+    {% if object %}
+        <div class="btn-group">
+            <a href="{% url "group_delete" group.pk  %}" class="btn btn-outline-danger">Delete Group</a>
+            <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+    {% else %}
+        <button type="submit" class="btn btn-primary">Create</button>
+    {% endif %}
+{% endbuttons %}
+</form>
+{% endblock %}

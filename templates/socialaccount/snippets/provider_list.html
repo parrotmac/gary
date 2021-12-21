@@ -25,7 +25,7 @@
     {% endif %}
     {% if provider.name == "Google" %}
         <li>
-            <a class="btn btn-outline-dark"
+            <a class="btn btn-outline-light"
                href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}"
                role="button" style="text-transform:none">
                 <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in"
