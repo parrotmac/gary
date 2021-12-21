@@ -206,7 +206,8 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse("wishlist_detail", kwargs={
-            "pk": str(self.object.wishlist.id)
+            "pk": str(self.object.wishlist.id) ,
+            "group_pk": self.object.wishlist.group_id,
         })
 
 
