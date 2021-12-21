@@ -41,6 +41,7 @@ def invitation_saved(sender, instance: GroupInvitation, created: bool, **kwargs)
                     pass
                 else:
                     port_spec = f":{http_origin_url.port}"
+            path = reverse("accept_invitation", kwargs={"token": instance.verification_code})
 
             try:
                 msg = EmailMessage(
@@ -49,8 +50,6 @@ def invitation_saved(sender, instance: GroupInvitation, created: bool, **kwargs)
                     subject=f"{instance.sender.display_name} Invited you to Gary!",
                 )
                 msg.template_id = SENDGRID_EMAIL_INVITE_TEMPLATE
-
-                path = reverse("accept_invitation", kwargs={"token": instance.verification_code})
 
                 msg.dynamic_template_data = {
                     "invited_by": instance.sender.display_name,
