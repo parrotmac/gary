@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 
+import dj_database_url
+
 
 def get_envvar_list(envvar_name, default=[], separator=",", normalize=True):
     env_value = os.getenv(envvar_name)
@@ -108,6 +110,8 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+if database_url := os.getenv("DATABASE_URL"):
+    DATABASES["default"] = dj_database_url.config(conn_max_age=600)
 
 
 # Password validation
