@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -184,3 +185,7 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 
 class ProfileLogoutView(LoginRequiredMixin, LogoutView):
     template_name = 'account/logout.html'
+
+
+def health_check(request):
+    return HttpResponse("OK")

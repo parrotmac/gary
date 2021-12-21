@@ -1,11 +1,11 @@
-from allauth.account.views import LoginView
 from django.urls import path
 
 from gifter.views import GroupListView, GroupDetailView, redirect_to_groups, WishlistDetailView, ItemCreateView, \
     ItemUpdateView, ClaimCreateView, ClaimUpdateView, ClaimDeleteView, accept_invitation, incoming_invitation, \
-    ProfileView, ProfileLogoutView
+    ProfileView, health_check
 
 urlpatterns = [
+    path('healthz', health_check, name='health_check'),
     path('', redirect_to_groups, name='redirect_to_groups'),
     path('groups', GroupListView.as_view(), name='group_list'),
     path('groups/<str:pk>', GroupDetailView.as_view(), name='group_detail'),
