@@ -26,3 +26,13 @@ a:link, a:visited {
     align-items: center;
     justify-content: space-between;
 }
+
+.profile {
+    display: flex;
+}
+
+.profile-photo {
+    max-height: 40px;
+    max-width: 40px;
+    border-radius: 100px;
+}

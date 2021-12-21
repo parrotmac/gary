@@ -1,9 +1,9 @@
-from django.contrib import admin
-from django.urls import path, include
-from django.views.generic import TemplateView
+from allauth.account.views import LoginView
+from django.urls import path
 
 from gifter.views import GroupListView, GroupDetailView, redirect_to_groups, WishlistDetailView, ItemCreateView, \
-    ItemUpdateView, ClaimCreateView, ClaimUpdateView, ClaimDeleteView
+    ItemUpdateView, ClaimCreateView, ClaimUpdateView, ClaimDeleteView, accept_invitation, incoming_invitation, \
+    ProfileView, ProfileLogoutView
 
 urlpatterns = [
     path('', redirect_to_groups, name='redirect_to_groups'),
@@ -15,5 +15,7 @@ urlpatterns = [
     path('wishlists/<str:wishlist_pk>/items/<str:item_pk>/claims/create', ClaimCreateView.as_view(), name='claim_create'),
     path('wishlists/<str:wishlist_pk>/items/<str:item_pk>/claims/<str:pk>', ClaimUpdateView.as_view(), name='claim_update'),
     path('wishlists/<str:wishlist_pk>/items/<str:item_pk>/claims/<str:pk>/delete', ClaimDeleteView.as_view(), name='claim_delete'),
-    path('accounts/profile/', TemplateView.as_view(template_name='accounts/profile.html')),
+    path('invitations/incoming/<str:token>', incoming_invitation, name='accept_invitation'),
+    path('invitations/accept', accept_invitation, name='accept_invitation'),
+    path('accounts/profile', ProfileView.as_view(), name='profile_view'),
 ]

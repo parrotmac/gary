@@ -1,12 +1,15 @@
+from allauth.account.views import LogoutView
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.utils import timezone
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 
-from gifter.models import Wishlist, Item, Claim
+from gifter.models import Wishlist, Item, Claim, GroupInvitation
 
 
 @login_required
@@ -125,3 +128,59 @@ class ClaimDeleteView(LoginRequiredMixin, DeleteView):
         return reverse("wishlist_detail", kwargs={
             "pk": str(self.object.item.wishlist.id)
         })
+
+
+def incoming_invitation(request, token):
+    """
+    incoming_invitation stores the incoming token in the session to be retrieved later
+    """
+    request.session['invitation_token'] = token
+    return redirect(to='accept_invitation')
+
+
+@login_required
+def accept_invitation(request):
+    """
+    after being stored by invitation_token, accept_invitation pulls the stored
+    token off of the session and adds the user to the pre-determined group
+    """
+    next_view = request.GET.get('next', reverse('group_list'))
+    stored_token = request.session.pop("invitation_token", None)
+    if not stored_token:
+        messages.add_message(
+            request,
+            level=messages.WARNING,
+            message="There was an issue accepting an invitation. Perhaps the invitation was already accepted?",
+            fail_silently=True,
+        )
+        return redirect(to=next_view)
+    try:
+        invitation = GroupInvitation.objects.get(verification_code=stored_token, destination_email=request.user.email)
+        if not invitation.verified_at:
+            request.user.groups.add(invitation.target_group)
+            invitation.verified_at = timezone.now()
+            invitation.save()
+        return redirect(to=reverse('group_detail', kwargs={
+            'pk': invitation.target_group_id,
+        }))
+    except GroupInvitation.DoesNotExist:
+        messages.add_message(
+            request,
+            level=messages.WARNING,
+            message="There was an issue accepting an invitation. Perhaps the invitation was already accepted?",
+            fail_silently=True,
+        )
+    return redirect(to=next_view)
+
+
+class ProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'account/profile.html'
+
+    def get(self, request, *args, **kwargs):
+        if 'invitation_token' in request.session.keys():
+            return redirect(to=f"{reverse('accept_invitation')}?next={reverse('profile_view')}")
+        return super(ProfileView, self).get(self, request, *args, **kwargs)
+
+
+class ProfileLogoutView(LoginRequiredMixin, LogoutView):
+    template_name = 'account/logout.html'
