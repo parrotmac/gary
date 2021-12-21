@@ -48,6 +48,17 @@ ALLOWED_HOSTS = get_envvar_list("ALLOWED_HOSTS")
 
 CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
 
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = get_envvar_list(
+    "CORS_ORIGIN_WHITELIST",
+    [
+        "https://{}".format(origin) for origin in ALLOWED_HOSTS
+    ],
+)
+
 # Application definition
 
 INSTALLED_APPS = [
