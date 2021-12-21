@@ -42,7 +42,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", 'django-insecure-$1u^am(!h^zxcbi=^c1fga=mpv)zaw&lry$na3u*lgovf6jcf9')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "ENABLED") == "ENABLED"
 
 ALLOWED_HOSTS = get_envvar_list("ALLOWED_HOSTS")
 
@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'gifter.apps.GifterConfig',
     'bootstrap5',
+    'whitenoise',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -67,6 +68,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -171,7 +173,68 @@ SITE_ID = 1
 
 STATIC_URL = 'static/'
 
+STATIC_ROOT = os.environ.get(
+    "DJANGO_STATIC_ROOT", os.path.join(BASE_DIR, "staticfiles")
+)
+
+STATICFILES_DIRS = [
+    BASE_DIR / "gifter/static",
+]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+###
+# Email
+###
+# See https://docs.djangoproject.com/en/4.0/ref/settings/#email-backend
+
+# Will default to root@localhost or webmaster@localhost which will get flagged as spam
+# Mostly used fo automated emails, e.g. errors
+# Django's Email system allows defining a different 'From' email when manually sending email
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@gary.parker.style")
+
+# Used for system generated email, such as Email Address verification
+DEFAULT_NOREPLY_EMAIL = os.getenv("DEFAULT_NOREPLY_EMAIL", "noreply@gary.parker.style")
+
+# Quickstart from https://sendgrid.com/docs/for-developers/sending-email/django/
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
+
+MAILHOG_HOST = os.getenv("MAILHOG_HOST")
+
+# Let app code check to see if Sendgrid is available
+SENDGRID_ENABLED = False
+
+if SENDGRID_API_KEY:
+    SENDGRID_ENABLED = True
+    EMAIL_HOST = "smtp.sendgrid.net"
+    EMAIL_HOST_USER = "apikey"
+    EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+    SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+elif MAILHOG_HOST:
+    print("Using mailhog", MAILHOG_HOST)
+    EMAIL_HOST = MAILHOG_HOST
+    EMAIL_PORT = 1025
+    EMAIL_USE_TLS = False
+else:
+    # Emails won't be sent unless configured above
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# See https://docs.djangoproject.com/en/4.0/ref/settings/#std:setting-ADMINS
+ADMINS = [
+    # Expects a list of tuples, e.g. ('Mary', 'mary@example.com'),
+]
+
+DEFAULT_ADMINS = ["Isaac:isaac@sianware.com"]
+for admin in get_envvar_list("ADMINS", DEFAULT_ADMINS):
+    if ":" in admin:
+        parts = admin.split(":")
+        ADMINS.append((parts[0], parts[1]))
