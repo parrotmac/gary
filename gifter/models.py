@@ -58,6 +58,15 @@ class User(AbstractUser, CommonBaseClass):
             return self.email
         return self.username
 
+    @property
+    def display_email(self):
+        if self.email:
+            return self.email
+        if self.socialaccount_set.count() > 0:
+            if social_account_email := self.socialaccount_set.first().extra_data.get('email'):
+                return social_account_email
+        return None
+
     def __str__(self):
         return self.display_name
 

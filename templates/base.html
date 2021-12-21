@@ -19,7 +19,7 @@
 {% block navbar %}
     <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2F7134">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Gary The Gift Fairy</a>
+            <a class="navbar-brand" href="{% url "redirect_to_groups" %}">Gary The Gift Fairy</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -31,7 +31,7 @@
                         <a class="nav-link active" aria-current="page" href="{% url "group_list" %}">Groups</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url "group_list" %}">My Wishlists</a>
+                        <a class="nav-link" href="{% url "my_wishlists" %}">My Wishlists</a>
                     </li>
                 </ul>
                 {% if request.user.is_authenticated %}

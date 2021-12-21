@@ -151,6 +151,14 @@ class WishlistCreateView(LoginRequiredMixin, CreateView):
         return super(WishlistCreateView, self).form_valid(form)
 
 
+class MyWishlistsListView(LoginRequiredMixin, ListView):
+    model = Wishlist
+    template_name = "gifter/wishlist_list.html"
+
+    def get_queryset(self):
+        return Wishlist.objects.filter(owner=self.request.user)
+
+
 class WishlistUpdateView(LoginRequiredMixin, UpdateView):
     model = Wishlist
     template_name = 'gifter/wishlist_form.html'

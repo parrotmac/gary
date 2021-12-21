@@ -1,5 +1,20 @@
 {% extends "account/base.html" %}
 {% block head_title %}Profile{% endblock %}
 {% block content %}
-<h1>{{ request.user.username }}</h1>
+
+    <div class="row">
+    <div class="col col-3">
+        <img style="border-radius: 1000px; height: 4rem; width: 4rem;" src="{{ request.user.display_photo }}" alt="Profile Photo of {{ request.user.display_name }}" />
+    </div>
+    </div>
+    <div class="row">
+        <div class="col col-5">
+            <p>Name: {{ request.user.display_name }}</p>
+            {% if request.user.display_email %}
+            <p>Email: {{ request.user.display_email }}</p>
+            {% else %}
+            <p>No known email.</p>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}»
