@@ -8,7 +8,8 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
 
-from gary.settings import SENDGRID_ENABLED, SENDGRID_EMAIL_INVITE_TEMPLATE, INVITE_EMAIL_COOLDOWN_PERIOD_MINUTES
+from gary.settings import SENDGRID_ENABLED, SENDGRID_EMAIL_INVITE_TEMPLATE, INVITE_EMAIL_COOLDOWN_PERIOD_MINUTES, \
+    DEFAULT_FROM_EMAIL
 from gifter.models import GroupInvitation
 
 logger = logging.getLogger(__name__)
@@ -31,6 +32,7 @@ def invitation_saved(sender, instance: GroupInvitation, created: bool, **kwargs)
                 return
 
         if SENDGRID_ENABLED:
+            from_email = DEFAULT_FROM_EMAIL
             http_origin_url = urlparse(instance.http_origin) if instance.http_origin else urlparse("https://wishlist.parker.style")
 
             port_spec = ""
@@ -45,7 +47,8 @@ def invitation_saved(sender, instance: GroupInvitation, created: bool, **kwargs)
 
             try:
                 msg = EmailMessage(
-                    from_email="noreply@mail.parker.style",
+                    from_email=from_email,
+                    reply_to=["isaac@sianware.com"],
                     to=[instance.destination_email],
                     subject=f"{instance.sender.display_name} Invited you to Gary!",
                 )
@@ -55,10 +58,9 @@ def invitation_saved(sender, instance: GroupInvitation, created: bool, **kwargs)
                     "invited_by": instance.sender.display_name,
                     "verification_url": f"{http_origin_url.scheme}://{http_origin_url.hostname}{port_spec}{path}"
                 }
-                msg.send(fail_silently=False)
+                msg.send(fail_silently=True)  # FIXME: This is reporting errors even when successful!
 
                 instance.sent_at = timezone.now()
                 instance.save()
             except Exception as e:
-                print("Failed to send email", e)
-                pass
+                logger.error(f"Failed to send email to {instance.destination_email} from {from_email}", e)

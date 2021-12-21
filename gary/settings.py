@@ -241,7 +241,10 @@ if SENDGRID_API_KEY:
     EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
-    EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+
+    # Consider 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "sendgrid_backend.SendgridBackend")
+
     SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 elif MAILHOG_HOST:
     print("Using mailhog", MAILHOG_HOST)
