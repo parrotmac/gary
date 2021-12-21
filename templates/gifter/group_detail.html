@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block page_title %}{{ group.name }} | Wishlists{% endblock %}
+{% block content %}
+    <nav class="mt-3" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" aria-current="page"><a href="{% url "group_list" %}">Groups</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ group.name }}</li>
+        </ol>
+    </nav>
+    <h2 class="mt-3">{{ group.name }}</h2>
+    {% for wl in group.wishlist_set.all %}
+        <div class="card bg-dark mb-2">
+            <div class="card-body">
+                <a href="{% url "wishlist_detail" wl.id %}">{{ wl.title }}</a>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,28 @@
+body, html {
+    min-height: 100%;
+}
+
+body {
+    background-color: #2F2F2F;
+    color: white;
+}
+
+a:link, a:visited {
+    color: white;
+}
+
+.wishlist-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.wishlist-page-card {
+    background-color: rgb(105, 24, 24);
+}
+
+.wishlist-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}

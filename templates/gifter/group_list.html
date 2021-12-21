@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block page_title %}Groups{% endblock %}
+{% block content %}
+    <nav class="mt-3" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active" aria-current="page"><a href="{% url "group_list" %}">Groups</a></li>
+        </ol>
+    </nav>
+    {% for group in object_list %}
+        <div class="card bg-dark mb-2">
+            <div class="card-body">
+                <a href="{% url "group_detail" group.id %}">{{ group.name }}</a>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

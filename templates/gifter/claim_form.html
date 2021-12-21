@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+{% block content %}
+    {% if object %}
+        <form action="{% url "claim_update" wishlist_pk=request.resolver_match.kwargs.wishlist_pk item_pk=object.item.id pk=object.pk %}" method="post">
+    {% else %}
+        <form action="{% url "claim_create" wishlist_pk=request.resolver_match.kwargs.wishlist_pk item_pk=request.resolver_match.kwargs.item_pk %}" method="post">
+    {% endif %}
+{% csrf_token %}
+{% bootstrap_form form %}
+{% buttons %}
+        {% if object %}
+            <div class="btn-group">
+            <button type="submit" class="btn btn-primary">Update</button>
+            <a href="{% url "claim_delete" wishlist_pk=claim.item.wishlist_id item_pk=claim.item.id pk=claim.id %}" class="btn btn-warning">Remove Claim</a>
+        {% else %}
+            <button type="submit" class="btn btn-primary">Create</button>
+    {% endif %}
+    </div>
+{% endbuttons %}
+</form>
+{% endblock %}

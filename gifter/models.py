@@ -55,6 +55,9 @@ class Item(CommonBaseClass):
     links = models.JSONField(default=list, blank=True, null=True)
     # TODO: Add support for photos
 
+    def __str__(self):
+        return f"{self.owner} - {self.title}"
+
 
 class Claim(CommonBaseClass):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
@@ -64,4 +67,7 @@ class Claim(CommonBaseClass):
     description = models.TextField(blank=True, null=True)
     links = models.JSONField(default=list, blank=True, null=True)
     # TODO: Add support for photos
+
+    def __str__(self):
+        return f"{self.owner} claims {self.item}"
 

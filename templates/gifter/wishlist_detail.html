@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load gift_extras %}
+{% block page_title %}{{ wishlist.group.name }} | Wishlists{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col">
+            <div class="card wishlist-page-card mt-3">
+                <div class="card-header wishlist-page-header">
+                    <h2>{{ wishlist.title }}</h2>
+                    <a href="{% url 'item_create' wishlist_pk=wishlist.pk %}" class="btn btn-success">Add Item &nbsp;<i
+                            class="bi bi-plus-square-fill"></i></a>
+                </div>
+                <div class="card-body">
+                    {% for wli in wishlist.item_set.all %}
+                        <div class="row mb-2">
+                            <div class="col">
+                                <div class="card bg-dark">
+                                    <div class="card-header wishlist-item-header">
+                                        {{ wli.title }}
+                                        {% if request.user == wishlist.owner %}
+                                            <a href="{% url "item_update" wishlist_pk=wishlist.pk pk=wli.id %}"
+                                               class="btn btn-sm btn-primary">Edit</a>
+                                        {% else %}
+                                            {% if my_claims|has_intersection:wli.claim_set.all %}
+                                                {% for claim in my_claims %}
+                                                    {% if claim.item == wli %}
+                                                        <a href="{% url "claim_update" wishlist_pk=wishlist.id item_pk=wli.id pk=claim.id %}"
+                                                           class="btn btn-primary position-relative">
+                                                            Update Claim&nbsp;&nbsp;<i class="bi bi-hammer"></i>
+                                                            {% if wli.claim_set.count %}
+                                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                                    {{ wli.claim_set.count }}
+                                                                </span>
+                                                                <span class="visually-hidden">Claims on this item</span>
+                                                            {% endif %}
+                                                        </a>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% else %}
+                                                <a href="{% url "claim_create" wishlist_pk=wishlist.id item_pk=wli.id %}"
+                                                   class="btn btn-primary position-relative">
+                                                    Claim&nbsp;&nbsp;<i class="bi bi-hammer"></i>
+                                                    {% if wli.claim_set.count %}
+                                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                            {{ wli.claim_set.count }}
+                                                        </span>
+                                                        <span class="visually-hidden">Claims on this item</span>
+                                                    {% endif %}
+                                                </a>
+                                            {% endif %}
+
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-body">
+                                        {{ wli.description }}
+                                        {% if wli.links %}
+                                            <hr/>
+                                            Links:
+                                            <pre>{{ wli.links|join:"\n" }}</pre>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+{% endblock %}
