@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from gifter.models import User, Wishlist, Item, Claim
+
+admin.site.register(User)
+admin.site.register(Wishlist)
+admin.site.register(Item)
+admin.site.register(Claim)
