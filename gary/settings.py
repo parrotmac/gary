@@ -9,8 +9,25 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import os
 from pathlib import Path
+
+
+def get_envvar_list(envvar_name, default=[], separator=",", normalize=True):
+    env_value = os.getenv(envvar_name)
+
+    if not env_value:
+        return default
+
+    results = []
+    for val in env_value.split(separator):
+        if normalize:
+            if val and val.strip() != "":
+                results.append(val)
+        else:
+            results.append(val)
+    return results
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +37,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$1u^am(!h^zxcbi=^c1fga=mpv)zaw&lry$na3u*lgovf6jcf9'
+SECRET_KEY = os.getenv("SECRET_KEY", 'django-insecure-$1u^am(!h^zxcbi=^c1fga=mpv)zaw&lry$na3u*lgovf6jcf9')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = get_envvar_list("ALLOWED_HOSTS")
 
 
 # Application definition
@@ -37,7 +54,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'gifter.apps.GifterConfig',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -63,6 +86,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
             ],
         },
     },
@@ -102,6 +126,24 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = "gifter.User"
 
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {"access_type": "online"},
+        "APP": {
+            "client_id": os.getenv("GOOGLE_AUTH_CLIENT_ID"),
+            "secret": os.getenv("GOOGLE_AUTH_SECRET"),
+        },
+    }
+}
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
@@ -114,6 +156,7 @@ USE_I18N = True
 
 USE_TZ = True
 
+SITE_ID = 1
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
