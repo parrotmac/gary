@@ -45,8 +45,12 @@ SECRET_KEY = os.getenv("SECRET_KEY", 'django-insecure-$1u^am(!h^zxcbi=^c1fga=mpv
 DEBUG = os.getenv("DEBUG", "ENABLED") == "ENABLED"
 
 ALLOWED_HOSTS = get_envvar_list("ALLOWED_HOSTS")
+TLS_ENABLED = os.getenv("TLS_ENABLED", "ENABLED") == "ENABLED"
 
-CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
+# https://docs.djangoproject.com/en/dev/releases/4.0/#format-change
+CSRF_TRUSTED_ORIGINS = [
+    f"{'https' if TLS_ENABLED else 'http'}://{host}" for host in ALLOWED_HOSTS
+]
 
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
