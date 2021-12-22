@@ -108,6 +108,7 @@ class Claim(CommonBaseClass):
 
 
 def verification_code():
+    # 16 bytes will result in a 22-byte-long string
     return secrets.token_urlsafe(16)
 
 
