@@ -115,9 +115,8 @@ class GroupInvitation(CommonBaseClass):
     sender = models.ForeignKey(User, on_delete=models.DO_NOTHING, blank=False, null=False, related_name='send_invitations')
     target_group = models.ForeignKey(Group, on_delete=models.DO_NOTHING, blank=False, null=False)
     destination_email = models.EmailField(blank=False, null=False)
-    verification_code = models.CharField(max_length=16, editable=False, null=False, blank=False, default=verification_code)
+    verification_code = models.CharField(max_length=32, editable=False, null=False, blank=False, default=verification_code)
     sent_at = models.DateTimeField(blank=True, null=True)
     verified_at = models.DateTimeField(blank=True, null=True)
     resulting_user = models.ForeignKey(User, on_delete=models.DO_NOTHING, blank=True, null=True, related_name='accepted_invitations')
     http_origin = models.URLField(blank=True, null=True)  # Used when constructing invitation URL
-
