@@ -220,7 +220,7 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse("wishlist_detail", kwargs={
-            "pk": str(self.object.wishlist.id) ,
+            "pk": str(self.object.wishlist.id),
             "group_pk": self.object.wishlist.group_id,
         })
 
@@ -234,7 +234,8 @@ class ClaimCreateView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse("wishlist_detail", kwargs={
-            "pk": str(self.object.item.wishlist.id)
+            "pk": str(self.object.item.wishlist.id),
+            "group_pk": self.object.item.wishlist.group_id,
         })
 
     def form_valid(self, form):
@@ -258,7 +259,8 @@ class ClaimUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse("wishlist_detail", kwargs={
-            "pk": str(self.object.item.wishlist.id)
+            "pk": str(self.object.item.wishlist.id),
+            "group_pk": self.object.item.wishlist.group_id,
         })
 
 
@@ -267,7 +269,8 @@ class ClaimDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         return reverse("wishlist_detail", kwargs={
-            "pk": str(self.object.item.wishlist.id)
+            "pk": str(self.object.item.wishlist.id),
+            "group_pk": self.object.item.wishlist.group_id,
         })
 
 

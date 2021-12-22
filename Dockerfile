@@ -20,7 +20,7 @@ RUN poetry install --no-interaction
 
 COPY . ./
 
-# Monkey-patch to use ngrok tunnel
-RUN sed -i 's/https:\/\/api.sendgrid.com/https:\/\/yogurt.ngrok.io/g' /usr/local/lib/python3.10/site-packages/sendgrid/sendgrid.py
+# Uncomment to monkey-patch sendgrid library to use ngrok tunnel
+# RUN sed -i 's/https:\/\/api.sendgrid.com/https:\/\/yogurt.ngrok.io/g' /usr/local/lib/python3.10/site-packages/sendgrid/sendgrid.py
 
 CMD ["/app/scripts/server"]
