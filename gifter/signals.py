@@ -50,7 +50,6 @@ def invitation_saved(sender, instance: GroupInvitation, created: bool, **kwargs)
                     from_email=from_email,
                     reply_to=["isaac@sianware.com"],
                     to=[instance.destination_email],
-                    subject=f"{instance.sender.display_name} Invited you to Gary!",
                 )
                 msg.template_id = SENDGRID_EMAIL_INVITE_TEMPLATE
 

@@ -4,11 +4,11 @@ body, html {
 
 body {
     background-color: #2F2F2F;
-    color: white;
+    color: #FFFFFF;
 }
 
 a:link, a:visited {
-    color: white;
+    color: #FFFFFF;
 }
 
 .wishlist-item-header {
