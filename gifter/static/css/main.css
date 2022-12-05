@@ -101,3 +101,8 @@ a:link, a:visited {
     margin: 0;
     width: 3rem;
 }
+
+input[type="text"] .form-control, textarea .form-control, .form-control, .form-control:focus {
+    background-color: #605c5c;
+    color: #eaeaea;
+}

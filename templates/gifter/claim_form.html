@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% load bootstrap5 %}
 {% block content %}
+    <h2>If you got <em>{{ wishlist.owner.display_name }}</em> "<em>{{ item.title }}</em>", claim this item.</h2>
+    <p>Optionally, add details about what you got them. Don't worry, they won't see this.</p>
     {% if object %}
         <form action="{% url "claim_update" wishlist_pk=request.resolver_match.kwargs.wishlist_pk item_pk=object.item.id pk=object.pk %}" method="post">
     {% else %}
@@ -14,7 +16,7 @@
             <button type="submit" class="btn btn-primary">Update</button>
             <a href="{% url "claim_delete" wishlist_pk=claim.item.wishlist_id item_pk=claim.item.id pk=claim.id %}" class="btn btn-warning">Remove Claim</a>
         {% else %}
-            <button type="submit" class="btn btn-primary">Create</button>
+            <button type="submit" class="btn btn-primary">Claim</button>
     {% endif %}
     </div>
 {% endbuttons %}

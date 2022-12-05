@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% load bootstrap5 %}
 {% block content %}
+    {% if request.user == wishlist.owner %}
+        <h2>Adding to my wishlist</h2>
+    {% else %}
+        <h2>Suggesting for {{ wishlist.owner }}'s wishlist</h2>
+    {% endif %}
     {% if object %}
         <form action="{% url "item_update" wishlist_pk=request.resolver_match.kwargs.wishlist_pk pk=object.pk %}" method="post">
     {% else %}
@@ -9,7 +14,15 @@
     {% csrf_token %}
     {% bootstrap_form form %}
     {% buttons %}
-        <button type="submit" class="btn btn-primary">Submit</button>
+        {% if object %}
+            <div style="display: flex; flex-direction: row; justify-content: space-between">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="{% url "item_delete" wishlist_pk=request.resolver_match.kwargs.wishlist_pk pk=object.pk %}" class="btn btn-outline-danger">Delete</a>
+            </div>
+        {% else %}
+        <button type="submit" class="btn btn-primary">Save</button>
+        {% endif %}
+
     {% endbuttons %}
 </form>
 {% endblock %}

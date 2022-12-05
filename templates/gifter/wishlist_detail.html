@@ -15,13 +15,16 @@
     </div>
     <div class="row">
         <div class="col">
-            <div class="card wishlist-page-card mt-3">
+            <div class="card bg-secondary wishlist-page-card mt-3">
                 <div class="card-header wishlist-page-header">
                     <h2>{{ wishlist.title }}</h2>
                     <div class="btn-group">
+                        {% if request.user == wishlist.owner %}
                         <a href="{% url "wishlist_delete" group_pk=wishlist.group.pk pk=wishlist.pk %}" class="btn btn-outline-danger">Delete</a>
-                        <a href="{% url 'item_create' wishlist_pk=wishlist.pk %}" class="btn btn-success">Add Item &nbsp;<i
-                                class="bi bi-plus-square-fill"></i></a>
+                        <a href="{% url 'item_create' wishlist_pk=wishlist.pk %}" class="btn btn-success">Add Item &nbsp;<i class="bi bi-plus-square-fill"></i></a>
+                        {% else %}
+                        <a href="{% url 'item_create' wishlist_pk=wishlist.pk %}" class="btn btn-outline-success">Suggest Item &nbsp;<i class="bi bi-plus-square-fill"></i></a>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="card-body">
@@ -66,7 +69,7 @@
                                         {% endif %}
                                     </div>
                                     <div class="card-body">
-                                        {{ wli.description }}
+                                        <span style="white-space: pre-line">{{ wli.description }}</span>
                                         {% if wli.links %}
                                             <hr/>
                                             Links:

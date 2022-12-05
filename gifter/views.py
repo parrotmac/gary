@@ -191,6 +191,11 @@ class ItemCreateView(LoginRequiredMixin, CreateView):
         'description',
     ]
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['wishlist'] = Wishlist.objects.get(id=self.kwargs['wishlist_pk'])
+        return context
+
     def get_success_url(self):
         return reverse("wishlist_detail", kwargs={
             "pk": str(self.object.wishlist.id),
@@ -202,8 +207,8 @@ class ItemCreateView(LoginRequiredMixin, CreateView):
         wishlist = Wishlist.objects.get(
             id=self.request.resolver_match.kwargs['wishlist_pk']
         )
-        if wishlist.owner != self.request.user:
-            raise ValidationError("Cannot add items owned by someone other than the wishlist owner")
+        # if wishlist.owner != self.request.user:
+        #     raise ValidationError("Cannot add items owned by someone other than the wishlist owner")
         form.instance.wishlist_id = str(wishlist.id)
         form.instance.owner = user
 
@@ -218,9 +223,25 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
         'description',
     ]
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['wishlist'] = Wishlist.objects.get(id=self.kwargs['wishlist_pk'])
+        return context
+
     def get_success_url(self):
         return reverse("wishlist_detail", kwargs={
             "pk": str(self.object.wishlist.id),
+            "group_pk": self.object.wishlist.group_id,
+        })
+
+
+class ItemDeleteView(LoginRequiredMixin, DeleteView):
+    model = Item
+    template_name = "gifter/item_confirm_delete.html"
+
+    def get_success_url(self):
+        return reverse("wishlist_detail", kwargs={
+            "pk": self.object.wishlist.id,
             "group_pk": self.object.wishlist.group_id,
         })
 
@@ -231,6 +252,12 @@ class ClaimCreateView(LoginRequiredMixin, CreateView):
     fields = [
         'description',
     ]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['item'] = Item.objects.get(id=self.kwargs['item_pk'])
+        context['wishlist'] = Wishlist.objects.get(id=self.kwargs['wishlist_pk'])
+        return context
 
     def get_success_url(self):
         return reverse("wishlist_detail", kwargs={
@@ -256,6 +283,12 @@ class ClaimUpdateView(LoginRequiredMixin, UpdateView):
     fields = [
         'description',
     ]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['item'] = Item.objects.get(id=self.kwargs['item_pk'])
+        context['wishlist'] = Wishlist.objects.get(id=self.kwargs['wishlist_pk'])
+        return context
 
     def get_success_url(self):
         return reverse("wishlist_detail", kwargs={

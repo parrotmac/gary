@@ -3,7 +3,7 @@ from django.urls import path
 from gifter.views import GroupListView, GroupDetailView, redirect_to_groups, WishlistDetailView, ItemCreateView, \
     ItemUpdateView, ClaimCreateView, ClaimUpdateView, ClaimDeleteView, accept_invitation, incoming_invitation, \
     ProfileView, health_check, GroupCreateView, GroupUpdateView, WishlistCreateView, WishlistUpdateView, \
-    WishlistDeleteView, GroupDeleteView, SendInviteFormView, MyWishlistsListView
+    WishlistDeleteView, GroupDeleteView, SendInviteFormView, MyWishlistsListView, ItemDeleteView
 
 urlpatterns = [
     path('healthz', health_check, name='health_check'),
@@ -20,6 +20,7 @@ urlpatterns = [
     path('wishlists', MyWishlistsListView.as_view(), name='my_wishlists'),
     path('wishlists/<str:wishlist_pk>/items/create', ItemCreateView.as_view(), name='item_create'),
     path('wishlists/<str:wishlist_pk>/items/<str:pk>', ItemUpdateView.as_view(), name='item_update'),
+    path('wishlists/<str:wishlist_pk>/items/<str:pk>/delete', ItemDeleteView.as_view(), name='item_delete'),
     path('wishlists/<str:wishlist_pk>/items/<str:item_pk>/claims/create', ClaimCreateView.as_view(), name='claim_create'),
     path('wishlists/<str:wishlist_pk>/items/<str:item_pk>/claims/<str:pk>', ClaimUpdateView.as_view(), name='claim_update'),
     path('wishlists/<str:wishlist_pk>/items/<str:item_pk>/claims/<str:pk>/delete', ClaimDeleteView.as_view(), name='claim_delete'),
