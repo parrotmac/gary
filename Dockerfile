@@ -1,26 +1,18 @@
-FROM python:3.10
+FROM python:3.10-buster
 
 EXPOSE 8000
 
-ENV PYTHONFAULTHANDLER=1 \
-  PYTHONUNBUFFERED=1 \
-  PYTHONHASHSEED=random \
-  PIP_NO_CACHE_DIR=off \
-  PIP_DISABLE_PIP_VERSION_CHECK=on \
-  PIP_DEFAULT_TIMEOUT=100 \
-  POETRY_VERSION=1.1.4
+RUN apt-get update && apt-get install -y curl
 
-RUN pip install "poetry==$POETRY_VERSION"
+RUN curl -sSL https://install.python-poetry.org | python - --version=1.2.2
 
 WORKDIR /app
 
 COPY poetry.lock pyproject.toml ./
+ENV PATH="/root/.local/bin:${PATH}"
 RUN poetry config virtualenvs.create false
 RUN poetry install --no-interaction
 
 COPY . ./
-
-# Uncomment to monkey-patch sendgrid library to use ngrok tunnel
-# RUN sed -i 's/https:\/\/api.sendgrid.com/https:\/\/yogurt.ngrok.io/g' /usr/local/lib/python3.10/site-packages/sendgrid/sendgrid.py
 
 CMD ["/app/scripts/server"]
