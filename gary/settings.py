@@ -216,10 +216,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Will default to root@localhost or webmaster@localhost which will get flagged as spam
 # Mostly used fo automated emails, e.g. errors
 # Django's Email system allows defining a different 'From' email when manually sending email
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@mail.parker.style")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "Gary The Wishlist Fairy <noreply@mail.parker.style>")
 
 # Used for system generated email, such as Email Address verification
-DEFAULT_NOREPLY_EMAIL = os.getenv("DEFAULT_NOREPLY_EMAIL", "noreply@mail.parker.style")
+DEFAULT_NOREPLY_EMAIL = os.getenv("DEFAULT_NOREPLY_EMAIL", "Gary The Wishlist Fairy <noreply@mail.parker.style>")
 
 # Quickstart from https://sendgrid.com/docs/for-developers/sending-email/django/
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
