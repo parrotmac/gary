@@ -16,7 +16,7 @@
                     return {"href": v}
                 }),
                 get asJson() {
-                    return JSON.stringify(this.links.map(link => link.href), null, 2)
+                    return JSON.stringify(this.links.map(link => link.href).filter(link => link && link !== ""), null, 2)
                 },
                 addItem(_) {
                     if (this.links.length >= 1 && this.links[this.links.length - 1].href !== "") {
