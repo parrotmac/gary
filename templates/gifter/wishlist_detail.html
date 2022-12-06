@@ -73,7 +73,9 @@
                                         {% if wli.links %}
                                             <hr/>
                                             Links:
-                                            <pre>{{ wli.links|join:"\n" }}</pre>
+                                            <ul>
+                                                {% for link in wli.links %}<li><a href="{{ link }}" target="_blank" rel="noopener noreferer">{{ link }}</a></li>{% endfor %}
+                                            </ul>
                                         {% endif %}
                                     </div>
                                 </div>

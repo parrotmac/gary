@@ -9,8 +9,8 @@
     {% if object %}
         <form action="{% url "item_update" wishlist_pk=request.resolver_match.kwargs.wishlist_pk pk=object.pk %}" method="post">
     {% else %}
-<form action="{% url "item_create" wishlist_pk=request.resolver_match.kwargs.wishlist_pk %}" method="post">
-{% endif %}
+        <form action="{% url "item_create" wishlist_pk=request.resolver_match.kwargs.wishlist_pk %}" method="post">
+    {% endif %}
     {% csrf_token %}
     {% bootstrap_form form %}
     {% buttons %}

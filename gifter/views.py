@@ -14,7 +14,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView, FormView
 
-from gifter.forms import InviteParticipantForm
+from gifter.forms import InviteParticipantForm, ItemForm
 from gifter.models import Wishlist, Item, Claim, GroupInvitation
 
 
@@ -186,10 +186,7 @@ class WishlistDeleteView(LoginRequiredMixin, DeleteView):
 class ItemCreateView(LoginRequiredMixin, CreateView):
     model = Item
     template_name = 'gifter/item_form.html'
-    fields = [
-        'title',
-        'description',
-    ]
+    form_class = ItemForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -218,10 +215,7 @@ class ItemCreateView(LoginRequiredMixin, CreateView):
 class ItemUpdateView(LoginRequiredMixin, UpdateView):
     model = Item
     template_name = 'gifter/item_form.html'
-    fields = [
-        'title',
-        'description',
-    ]
+    form_class = ItemForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

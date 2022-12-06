@@ -1,0 +1,47 @@
+<div class="form-group input-group">
+    <script>
+        const labelsInitialValue = "{{ widget.value|escapejs }}";
+        let initialLabels = JSON.parse(labelsInitialValue);
+        if (!initialLabels || !initialLabels.length) {
+            initialLabels = [""];
+        }
+    </script>
+    {# 'verbatim' tag is not strictly necessary, but prevents {{ }} from triggering Django #}
+    {% verbatim vue %}
+        <script type="module">
+            import {createApp} from 'https://unpkg.com/petite-vue?module'
+
+            createApp({
+                links: initialLabels.map(v => {
+                    return {"href": v}
+                }),
+                get asJson() {
+                    return JSON.stringify(this.links.map(link => link.href), null, 2)
+                },
+                addItem(_) {
+                    if (this.links.length >= 1 && this.links[this.links.length - 1].href !== "") {
+                        this.links = [
+                            ...this.links,
+                            {
+                                "href": ""
+                            }
+                        ];
+                    }
+                },
+            }).mount()
+        </script>
+    {% endverbatim vue %}
+    <div v-scope>
+        <ul class="links" style="list-style: none; padding: 0; margin: 0">
+            <li v-for="link in links" :key="link" style="margin: 0.25rem 0">
+                <input class="form-control" size="80" type="text" v-model="link.href"/>
+            </li>
+            <li>
+                <button class="btn btn-outline-secondary" @click="addItem" onclick="return false;">
+                    Another Link +
+                </button>
+            </li>
+        </ul>
+        <input type="hidden" name="{{ widget.name }}" :value="asJson"/>
+    </div>
+</div>
