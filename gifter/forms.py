@@ -26,7 +26,7 @@ class MultiLinkJsonField(JSONField):
 
 
 class ItemForm(ModelForm):
-    links = MultiLinkJsonField()
+    links = MultiLinkJsonField(required=False)
 
     class Meta:
         model = Item
