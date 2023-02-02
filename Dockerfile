@@ -1,7 +1,5 @@
 FROM python:3.10-buster
 
-EXPOSE 8000
-
 RUN apt-get update && apt-get install -y curl
 
 RUN curl -sSL https://install.python-poetry.org | python - --version=1.2.2
