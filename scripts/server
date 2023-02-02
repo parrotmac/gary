@@ -5,4 +5,4 @@
 
 # To specify number of threads, define ASGI_THREADS
 # By default, asgi uses <num CPUs> * 5
-daphne --bind 0.0.0.0 --port 8000 gary.asgi:application
+daphne --bind 0.0.0.0 --port "${PORT:-8000}" gary.asgi:application
