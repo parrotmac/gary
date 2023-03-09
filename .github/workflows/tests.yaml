@@ -38,7 +38,7 @@ jobs:
           poetry install
       - name: Run Redis
         run: |
-          docker-compose up redis -d
+          docker compose up -d redis
       - name: Unit Tests
         run: poetry run python ./manage.py test
       - name: Test w/ Production Dump
