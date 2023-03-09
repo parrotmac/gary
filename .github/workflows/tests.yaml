@@ -1,7 +1,7 @@
 name: Tests
 
 env:
-  - CI="1"
+  CI: "1"
 
 on: [push, pull_request]
 
