@@ -8,6 +8,21 @@ on: [push, pull_request]
 jobs:
   tests:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v2
       - name: Python Poetry Action
@@ -21,9 +36,9 @@ jobs:
       - name: Install deps
         run: |
           poetry install
-      - name: Run Database & Redis
+      - name: Run Redis
         run: |
-          docker-compose up -d
+          docker-compose up redis -d
       - name: Unit Tests
         run: poetry run python ./manage.py test
       - name: Test w/ Production Dump
