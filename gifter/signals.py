@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 @receiver(post_save, sender=GroupInvitation, dispatch_uid="group_invitation_created")
 def invitation_saved(sender, instance: GroupInvitation, created: bool, **kwargs):
     if created and not instance.sent_at:
-
         most_recent_matching_invitations = GroupInvitation.objects.filter(
             sender=instance.sender,
             destination_email=instance.destination_email,

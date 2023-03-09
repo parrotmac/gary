@@ -5,7 +5,6 @@ import gifter.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("gifter", "0003_groupinvitation_http_origin"),
     ]
