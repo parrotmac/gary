@@ -44,7 +44,7 @@ jobs:
       - name: Test w/ Production Dump
         run: |
           curl -fsSL -o /tmp/production-fixture.json ${{ secrets.PRODUCTION_FIXTURES_URL }}
-          poetry run ./manage.py testserver fixtures/production.json --noinput &
+          poetry run ./manage.py testserver /tmp/production-fixture.json --noinput &
           npm install
           npm run cy:test
 
