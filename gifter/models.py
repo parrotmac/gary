@@ -7,9 +7,17 @@ from django.db import models
 from django.utils import timezone
 
 
+class CommonBaseClassManager(models.Manager):
+    def get_queryset(self):
+        query_set = super().get_queryset()
+        return query_set.filter(deleted_at__isnull=True)
+
 class CommonBaseClass(models.Model):
     class Meta:
         abstract = True
+        ordering = ["-created_at", "-updated_at", "name"]
+
+    objects = CommonBaseClassManager()
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(default=timezone.now, editable=False)
