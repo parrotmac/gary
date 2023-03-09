@@ -16,6 +16,7 @@ daphne = "^3.0.2"
 dj-database-url = {git = "https://github.com/parrotmac/dj-database-url"}
 django-sendgrid-v5 = "^1.2.0"
 sentry-sdk = "^1.5.1"
+django = "4.1.2"
 
 [tool.poetry.dev-dependencies]
 black = "^21.12b0"
