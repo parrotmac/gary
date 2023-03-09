@@ -7,13 +7,15 @@ import gifter.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('gifter', '0003_groupinvitation_http_origin'),
+        ("gifter", "0003_groupinvitation_http_origin"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='groupinvitation',
-            name='verification_code',
-            field=models.CharField(default=gifter.models.verification_code, editable=False, max_length=32),
+            model_name="groupinvitation",
+            name="verification_code",
+            field=models.CharField(
+                default=gifter.models.verification_code, editable=False, max_length=32
+            ),
         ),
     ]

@@ -39,7 +39,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY", 'django-insecure-$1u^am(!h^zxcbi=^c1fga=mpv)zaw&lry$na3u*lgovf6jcf9')
+SECRET_KEY = os.getenv(
+    "SECRET_KEY", "django-insecure-$1u^am(!h^zxcbi=^c1fga=mpv)zaw&lry$na3u*lgovf6jcf9"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "ENABLED") == "ENABLED"
@@ -58,57 +60,53 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = get_envvar_list(
     "CORS_ORIGIN_WHITELIST",
-    [
-        "https://{}".format(origin) for origin in ALLOWED_HOSTS
-    ],
+    ["https://{}".format(origin) for origin in ALLOWED_HOSTS],
 )
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.sites',
-    'gifter.apps.GifterConfig',
-    'bootstrap5',
-    'whitenoise',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.sites",
+    "gifter.apps.GifterConfig",
+    "bootstrap5",
+    "whitenoise",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'gary.urls'
+ROOT_URLCONF = "gary.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(BASE_DIR, "templates")
-        ],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.request',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.request",
             ],
         },
     },
@@ -116,16 +114,16 @@ TEMPLATES = [
 
 APPEND_SLASH = False
 
-WSGI_APPLICATION = 'gary.wsgi.application'
+WSGI_APPLICATION = "gary.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 if database_url := os.getenv("DATABASE_URL"):
@@ -137,16 +135,16 @@ if database_url := os.getenv("DATABASE_URL"):
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -170,16 +168,16 @@ SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -190,7 +188,7 @@ SITE_ID = 1
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
 
 STATIC_ROOT = os.environ.get(
     "DJANGO_STATIC_ROOT", os.path.join(BASE_DIR, "staticfiles")
@@ -200,12 +198,12 @@ STATICFILES_DIRS = [
     BASE_DIR / "gifter/static",
 ]
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 ###
@@ -216,10 +214,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Will default to root@localhost or webmaster@localhost which will get flagged as spam
 # Mostly used fo automated emails, e.g. errors
 # Django's Email system allows defining a different 'From' email when manually sending email
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "Gary The Wishlist Fairy <noreply@mail.parker.style>")
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DEFAULT_FROM_EMAIL", "Gary The Wishlist Fairy <noreply@mail.parker.style>"
+)
 
 # Used for system generated email, such as Email Address verification
-DEFAULT_NOREPLY_EMAIL = os.getenv("DEFAULT_NOREPLY_EMAIL", "Gary The Wishlist Fairy <noreply@mail.parker.style>")
+DEFAULT_NOREPLY_EMAIL = os.getenv(
+    "DEFAULT_NOREPLY_EMAIL", "Gary The Wishlist Fairy <noreply@mail.parker.style>"
+)
 
 # Quickstart from https://sendgrid.com/docs/for-developers/sending-email/django/
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
@@ -229,10 +231,14 @@ MAILHOG_HOST = os.getenv("MAILHOG_HOST")
 # Let app code check to see if Sendgrid is available
 SENDGRID_ENABLED = False
 
-SENDGRID_EMAIL_INVITE_TEMPLATE = os.getenv("SENDGRID_EMAIL_INVITE_TEMPLATE", "d-7d32f3f48de243c6a5438af162ffc6d5")
+SENDGRID_EMAIL_INVITE_TEMPLATE = os.getenv(
+    "SENDGRID_EMAIL_INVITE_TEMPLATE", "d-7d32f3f48de243c6a5438af162ffc6d5"
+)
 
 # How long before a second email can be sent from a user to a particular email for a particular group
-INVITE_EMAIL_COOLDOWN_PERIOD_MINUTES = os.getenv("INVITE_EMAIL_COOLDOWN_PERIOD_MINUTES", "5")
+INVITE_EMAIL_COOLDOWN_PERIOD_MINUTES = os.getenv(
+    "INVITE_EMAIL_COOLDOWN_PERIOD_MINUTES", "5"
+)
 
 if SENDGRID_API_KEY:
     SENDGRID_ENABLED = True
@@ -310,6 +316,7 @@ SENTRY_DSN = os.getenv("SENTRY_DSN")
 if SENTRY_DSN:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
+
     sentry_sdk.init(
         dsn=SENTRY_DSN,
         integrations=[DjangoIntegration()],

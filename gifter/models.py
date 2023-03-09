@@ -12,6 +12,7 @@ class CommonBaseClassManager(models.Manager):
         query_set = super().get_queryset()
         return query_set.filter(deleted_at__isnull=True)
 
+
 class CommonBaseClass(models.Model):
     class Meta:
         abstract = True
@@ -48,17 +49,19 @@ class User(AbstractUser, CommonBaseClass):
     @property
     def display_photo(self):
         if self.socialaccount_set.count() > 0:
-            social_image = self.socialaccount_set.first().extra_data.get('picture')
+            social_image = self.socialaccount_set.first().extra_data.get("picture")
             return social_image
         if self.email:
             return f'https://www.gravatar.com/avatar/{hashlib.md5(self.email.encode("utf-8")).hexdigest()}?d=retro'
         # Return a 'mystery person' if nothing else is available
-        return 'https://www.gravatar.com/avatar/5f4dcc3b5aa765d61d8327deb882cf99?d=mp'
+        return "https://www.gravatar.com/avatar/5f4dcc3b5aa765d61d8327deb882cf99?d=mp"
 
     @property
     def display_name(self):
         if self.socialaccount_set.count() > 0:
-            if social_account_name := self.socialaccount_set.first().extra_data.get('name'):
+            if social_account_name := self.socialaccount_set.first().extra_data.get(
+                "name"
+            ):
                 return social_account_name
         if self.first_name:
             return self.first_name
@@ -71,7 +74,9 @@ class User(AbstractUser, CommonBaseClass):
         if self.email:
             return self.email
         if self.socialaccount_set.count() > 0:
-            if social_account_email := self.socialaccount_set.first().extra_data.get('email'):
+            if social_account_email := self.socialaccount_set.first().extra_data.get(
+                "email"
+            ):
                 return social_account_email
         return None
 
@@ -121,11 +126,33 @@ def verification_code():
 
 
 class GroupInvitation(CommonBaseClass):
-    sender = models.ForeignKey(User, on_delete=models.DO_NOTHING, blank=False, null=False, related_name='send_invitations')
-    target_group = models.ForeignKey(Group, on_delete=models.DO_NOTHING, blank=False, null=False)
+    sender = models.ForeignKey(
+        User,
+        on_delete=models.DO_NOTHING,
+        blank=False,
+        null=False,
+        related_name="send_invitations",
+    )
+    target_group = models.ForeignKey(
+        Group, on_delete=models.DO_NOTHING, blank=False, null=False
+    )
     destination_email = models.EmailField(blank=False, null=False)
-    verification_code = models.CharField(max_length=32, editable=False, null=False, blank=False, default=verification_code)
+    verification_code = models.CharField(
+        max_length=32,
+        editable=False,
+        null=False,
+        blank=False,
+        default=verification_code,
+    )
     sent_at = models.DateTimeField(blank=True, null=True)
     verified_at = models.DateTimeField(blank=True, null=True)
-    resulting_user = models.ForeignKey(User, on_delete=models.DO_NOTHING, blank=True, null=True, related_name='accepted_invitations')
-    http_origin = models.URLField(blank=True, null=True)  # Used when constructing invitation URL
+    resulting_user = models.ForeignKey(
+        User,
+        on_delete=models.DO_NOTHING,
+        blank=True,
+        null=True,
+        related_name="accepted_invitations",
+    )
+    http_origin = models.URLField(
+        blank=True, null=True
+    )  # Used when constructing invitation URL

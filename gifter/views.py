@@ -12,7 +12,15 @@ from django.shortcuts import redirect
 from django.template.defaultfilters import pluralize
 from django.urls import reverse
 from django.utils import timezone
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView, FormView
+from django.views.generic import (
+    ListView,
+    DetailView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+    TemplateView,
+    FormView,
+)
 
 from gifter.forms import InviteParticipantForm, ItemForm
 from gifter.models import Wishlist, Item, Claim, GroupInvitation
@@ -23,7 +31,7 @@ def possessive(value):
     """
     Add an "'s" or "'" where appropriate on proper nouns to to make them posessive
     """
-    if re.search(r's$', value):
+    if re.search(r"s$", value):
         return value + "'"
     else:
         return value + "'s"
@@ -31,20 +39,18 @@ def possessive(value):
 
 @login_required
 def redirect_to_groups(request):
-    return redirect(to='group_list')
+    return redirect(to="group_list")
 
 
 class GroupCreateView(LoginRequiredMixin, CreateView):
     model = Group
-    template_name = 'gifter/group_form.html'
+    template_name = "gifter/group_form.html"
     fields = [
-        'name',
+        "name",
     ]
 
     def get_success_url(self):
-        return reverse("group_detail", kwargs={
-            "pk": str(self.object.id)
-        })
+        return reverse("group_detail", kwargs={"pk": str(self.object.id)})
 
     def form_valid(self, form):
         user = self.request.user
@@ -54,10 +60,12 @@ class GroupCreateView(LoginRequiredMixin, CreateView):
 
     def get_initial(self):
         try:
-            social_family = self.request.user.socialaccount_set.first().extra_data.get('family_name')
+            social_family = self.request.user.socialaccount_set.first().extra_data.get(
+                "family_name"
+            )
             if social_family:
                 return {
-                    'name': f"{social_family} Family Christmas - {datetime.now().year}"
+                    "name": f"{social_family} Family Christmas - {datetime.now().year}"
                 }
         except Exception:
             pass
@@ -66,20 +74,18 @@ class GroupCreateView(LoginRequiredMixin, CreateView):
 
 class GroupUpdateView(LoginRequiredMixin, UpdateView):
     model = Group
-    template_name = 'gifter/group_form.html'
+    template_name = "gifter/group_form.html"
     fields = [
-        'name',
+        "name",
     ]
 
     def get_success_url(self):
-        return reverse("group_detail", kwargs={
-            "pk": str(self.object.id)
-        })
+        return reverse("group_detail", kwargs={"pk": str(self.object.id)})
 
 
 class GroupListView(LoginRequiredMixin, ListView):
     model = Group
-    template_name = 'gifter/group_list.html'
+    template_name = "gifter/group_list.html"
 
     def get_queryset(self):
         return self.request.user.groups.all()
@@ -87,11 +93,11 @@ class GroupListView(LoginRequiredMixin, ListView):
 
 class GroupDetailView(LoginRequiredMixin, DetailView):
     model = Group
-    template_name = 'gifter/group_detail.html'
+    template_name = "gifter/group_detail.html"
 
     def get_context_data(self, **kwargs):
         context = super(GroupDetailView, self).get_context_data(**kwargs)
-        context['send_invite_form'] = InviteParticipantForm(self.request.GET)
+        context["send_invite_form"] = InviteParticipantForm(self.request.GET)
         return context
 
 
@@ -105,29 +111,33 @@ class GroupDeleteView(LoginRequiredMixin, DeleteView):
 
 class WishlistDetailView(LoginRequiredMixin, DetailView):
     model = Wishlist
-    template_name = 'gifter/wishlist_detail.html'
+    template_name = "gifter/wishlist_detail.html"
 
     def get_context_data(self, **kwargs):
         context = super(WishlistDetailView, self).get_context_data(**kwargs)
 
         me = self.request.user
 
-        context['my_claims'] = Claim.objects.filter(owner=me, item__wishlist=self.object.id)
+        context["my_claims"] = Claim.objects.filter(
+            owner=me, item__wishlist=self.object.id
+        )
 
         return context
 
 
 class WishlistCreateView(LoginRequiredMixin, CreateView):
     model = Wishlist
-    template_name = 'gifter/wishlist_form.html'
+    template_name = "gifter/wishlist_form.html"
     fields = [
-        'title',
+        "title",
     ]
 
     def get_initial(self):
         name = "My"
         try:
-            social_given = self.request.user.socialaccount_set.first().extra_data.get('given_name')
+            social_given = self.request.user.socialaccount_set.first().extra_data.get(
+                "given_name"
+            )
             if social_given:
                 name = social_given
         except Exception:
@@ -135,19 +145,19 @@ class WishlistCreateView(LoginRequiredMixin, CreateView):
                 name = self.request.user.first_name
 
         return {
-            'title': f"{possessive(name)} Wishlist",
+            "title": f"{possessive(name)} Wishlist",
         }
 
     def get_success_url(self):
-        return reverse("wishlist_detail", kwargs={
-            "group_pk": str(self.object.group.id),
-            "pk": str(self.object.id)
-        })
+        return reverse(
+            "wishlist_detail",
+            kwargs={"group_pk": str(self.object.group.id), "pk": str(self.object.id)},
+        )
 
     def form_valid(self, form):
         user = self.request.user
         form.instance.owner = user
-        form.instance.group_id = self.request.resolver_match.kwargs['group_pk']
+        form.instance.group_id = self.request.resolver_match.kwargs["group_pk"]
         return super(WishlistCreateView, self).form_valid(form)
 
 
@@ -161,16 +171,16 @@ class MyWishlistsListView(LoginRequiredMixin, ListView):
 
 class WishlistUpdateView(LoginRequiredMixin, UpdateView):
     model = Wishlist
-    template_name = 'gifter/wishlist_form.html'
+    template_name = "gifter/wishlist_form.html"
     fields = [
-        'title',
+        "title",
     ]
 
     def get_success_url(self):
-        return reverse("wishlist_detail", kwargs={
-            "group_pk": str(self.object.group.id),
-            "pk": str(self.object.id)
-        })
+        return reverse(
+            "wishlist_detail",
+            kwargs={"group_pk": str(self.object.group.id), "pk": str(self.object.id)},
+        )
 
 
 class WishlistDeleteView(LoginRequiredMixin, DeleteView):
@@ -178,31 +188,37 @@ class WishlistDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "gifter/wishlist_confirm_delete.html"
 
     def get_success_url(self):
-        return reverse("group_detail", kwargs={
-            "pk": self.object.group.id,
-        })
+        return reverse(
+            "group_detail",
+            kwargs={
+                "pk": self.object.group.id,
+            },
+        )
 
 
 class ItemCreateView(LoginRequiredMixin, CreateView):
     model = Item
-    template_name = 'gifter/item_form.html'
+    template_name = "gifter/item_form.html"
     form_class = ItemForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['wishlist'] = Wishlist.objects.get(id=self.kwargs['wishlist_pk'])
+        context["wishlist"] = Wishlist.objects.get(id=self.kwargs["wishlist_pk"])
         return context
 
     def get_success_url(self):
-        return reverse("wishlist_detail", kwargs={
-            "pk": str(self.object.wishlist.id),
-            "group_pk": self.object.wishlist.group_id,
-        })
+        return reverse(
+            "wishlist_detail",
+            kwargs={
+                "pk": str(self.object.wishlist.id),
+                "group_pk": self.object.wishlist.group_id,
+            },
+        )
 
     def form_valid(self, form):
         user = self.request.user
         wishlist = Wishlist.objects.get(
-            id=self.request.resolver_match.kwargs['wishlist_pk']
+            id=self.request.resolver_match.kwargs["wishlist_pk"]
         )
         # if wishlist.owner != self.request.user:
         #     raise ValidationError("Cannot add items owned by someone other than the wishlist owner")
@@ -214,19 +230,22 @@ class ItemCreateView(LoginRequiredMixin, CreateView):
 
 class ItemUpdateView(LoginRequiredMixin, UpdateView):
     model = Item
-    template_name = 'gifter/item_form.html'
+    template_name = "gifter/item_form.html"
     form_class = ItemForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['wishlist'] = Wishlist.objects.get(id=self.kwargs['wishlist_pk'])
+        context["wishlist"] = Wishlist.objects.get(id=self.kwargs["wishlist_pk"])
         return context
 
     def get_success_url(self):
-        return reverse("wishlist_detail", kwargs={
-            "pk": str(self.object.wishlist.id),
-            "group_pk": self.object.wishlist.group_id,
-        })
+        return reverse(
+            "wishlist_detail",
+            kwargs={
+                "pk": str(self.object.wishlist.id),
+                "group_pk": self.object.wishlist.group_id,
+            },
+        )
 
 
 class ItemDeleteView(LoginRequiredMixin, DeleteView):
@@ -234,36 +253,40 @@ class ItemDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "gifter/item_confirm_delete.html"
 
     def get_success_url(self):
-        return reverse("wishlist_detail", kwargs={
-            "pk": self.object.wishlist.id,
-            "group_pk": self.object.wishlist.group_id,
-        })
+        return reverse(
+            "wishlist_detail",
+            kwargs={
+                "pk": self.object.wishlist.id,
+                "group_pk": self.object.wishlist.group_id,
+            },
+        )
 
 
 class ClaimCreateView(LoginRequiredMixin, CreateView):
     model = Claim
-    template_name = 'gifter/claim_form.html'
+    template_name = "gifter/claim_form.html"
     fields = [
-        'description',
+        "description",
     ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['item'] = Item.objects.get(id=self.kwargs['item_pk'])
-        context['wishlist'] = Wishlist.objects.get(id=self.kwargs['wishlist_pk'])
+        context["item"] = Item.objects.get(id=self.kwargs["item_pk"])
+        context["wishlist"] = Wishlist.objects.get(id=self.kwargs["wishlist_pk"])
         return context
 
     def get_success_url(self):
-        return reverse("wishlist_detail", kwargs={
-            "pk": str(self.object.item.wishlist.id),
-            "group_pk": self.object.item.wishlist.group_id,
-        })
+        return reverse(
+            "wishlist_detail",
+            kwargs={
+                "pk": str(self.object.item.wishlist.id),
+                "group_pk": self.object.item.wishlist.group_id,
+            },
+        )
 
     def form_valid(self, form):
         user = self.request.user
-        item = Item.objects.get(
-            id=self.request.resolver_match.kwargs['item_pk']
-        )
+        item = Item.objects.get(id=self.request.resolver_match.kwargs["item_pk"])
 
         form.instance.item = item
         form.instance.owner = user
@@ -273,40 +296,46 @@ class ClaimCreateView(LoginRequiredMixin, CreateView):
 
 class ClaimUpdateView(LoginRequiredMixin, UpdateView):
     model = Claim
-    template_name = 'gifter/claim_form.html'
+    template_name = "gifter/claim_form.html"
     fields = [
-        'description',
+        "description",
     ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['item'] = Item.objects.get(id=self.kwargs['item_pk'])
-        context['wishlist'] = Wishlist.objects.get(id=self.kwargs['wishlist_pk'])
+        context["item"] = Item.objects.get(id=self.kwargs["item_pk"])
+        context["wishlist"] = Wishlist.objects.get(id=self.kwargs["wishlist_pk"])
         return context
 
     def get_success_url(self):
-        return reverse("wishlist_detail", kwargs={
-            "pk": str(self.object.item.wishlist.id),
-            "group_pk": self.object.item.wishlist.group_id,
-        })
+        return reverse(
+            "wishlist_detail",
+            kwargs={
+                "pk": str(self.object.item.wishlist.id),
+                "group_pk": self.object.item.wishlist.group_id,
+            },
+        )
 
 
 class ClaimDeleteView(LoginRequiredMixin, DeleteView):
     model = Claim
 
     def get_success_url(self):
-        return reverse("wishlist_detail", kwargs={
-            "pk": str(self.object.item.wishlist.id),
-            "group_pk": self.object.item.wishlist.group_id,
-        })
+        return reverse(
+            "wishlist_detail",
+            kwargs={
+                "pk": str(self.object.item.wishlist.id),
+                "group_pk": self.object.item.wishlist.group_id,
+            },
+        )
 
 
 def incoming_invitation(request, token):
     """
     incoming_invitation stores the incoming token in the session to be retrieved later
     """
-    request.session['invitation_token'] = token
-    return redirect(to='accept_invitation')
+    request.session["invitation_token"] = token
+    return redirect(to="accept_invitation")
 
 
 @login_required
@@ -315,7 +344,7 @@ def accept_invitation(request):
     after being stored by invitation_token, accept_invitation pulls the stored
     token off of the session and adds the user to the pre-determined group
     """
-    next_view = request.GET.get('next', reverse('group_list'))
+    next_view = request.GET.get("next", reverse("group_list"))
     stored_token = request.session.pop("invitation_token", None)
     if not stored_token:
         messages.add_message(
@@ -326,14 +355,21 @@ def accept_invitation(request):
         )
         return redirect(to=next_view)
     try:
-        invitation = GroupInvitation.objects.get(verification_code=stored_token, destination_email=request.user.email)
+        invitation = GroupInvitation.objects.get(
+            verification_code=stored_token, destination_email=request.user.email
+        )
         if not invitation.verified_at:
             request.user.groups.add(invitation.target_group)
             invitation.verified_at = timezone.now()
             invitation.save()
-        return redirect(to=reverse('group_detail', kwargs={
-            'pk': invitation.target_group_id,
-        }))
+        return redirect(
+            to=reverse(
+                "group_detail",
+                kwargs={
+                    "pk": invitation.target_group_id,
+                },
+            )
+        )
     except GroupInvitation.DoesNotExist:
         messages.add_message(
             request,
@@ -345,16 +381,18 @@ def accept_invitation(request):
 
 
 class ProfileView(LoginRequiredMixin, TemplateView):
-    template_name = 'account/profile.html'
+    template_name = "account/profile.html"
 
     def get(self, request, *args, **kwargs):
-        if 'invitation_token' in request.session.keys():
-            return redirect(to=f"{reverse('accept_invitation')}?next={reverse('profile_view')}")
+        if "invitation_token" in request.session.keys():
+            return redirect(
+                to=f"{reverse('accept_invitation')}?next={reverse('profile_view')}"
+            )
         return super(ProfileView, self).get(self, request, *args, **kwargs)
 
 
 class ProfileLogoutView(LoginRequiredMixin, LogoutView):
-    template_name = 'account/logout.html'
+    template_name = "account/logout.html"
 
 
 def health_check(request):
@@ -365,13 +403,14 @@ class SendInviteFormView(FormView):
     form_class = InviteParticipantForm
 
     def get_success_url(self):
-        return reverse("group_detail", kwargs={
-            "pk": str(self.request.resolver_match.kwargs['group_pk'])
-        })
+        return reverse(
+            "group_detail",
+            kwargs={"pk": str(self.request.resolver_match.kwargs["group_pk"])},
+        )
 
     def form_valid(self, form):
-        group = Group.objects.get(id=self.request.resolver_match.kwargs['group_pk'])
-        email_address = form.cleaned_data.get('email_address')
+        group = Group.objects.get(id=self.request.resolver_match.kwargs["group_pk"])
+        email_address = form.cleaned_data.get("email_address")
 
         if group.user_set.filter(email=email_address).count() > 0:
             messages.add_message(

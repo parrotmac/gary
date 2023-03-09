@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('gifter', '0002_groupinvitation'),
+        ("gifter", "0002_groupinvitation"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='groupinvitation',
-            name='http_origin',
+            model_name="groupinvitation",
+            name="http_origin",
             field=models.URLField(blank=True, null=True),
         ),
     ]

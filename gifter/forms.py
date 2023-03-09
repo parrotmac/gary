@@ -7,13 +7,15 @@ from gifter.models import Item
 
 
 class LinksWidget(forms.Widget):
-    template_name = 'multi_link_widget_template.html'
+    template_name = "multi_link_widget_template.html"
 
     def get_context(self, name, value, attrs=None):
-        return {'widget': {
-            'name': name,
-            'value': value,
-        }}
+        return {
+            "widget": {
+                "name": name,
+                "value": value,
+            }
+        }
 
     def render(self, name, value, attrs=None, renderer=None):
         context = self.get_context(name, value, attrs)
@@ -30,7 +32,7 @@ class ItemForm(ModelForm):
 
     class Meta:
         model = Item
-        fields = ['title', 'description', 'links']
+        fields = ["title", "description", "links"]
 
 
 class InviteParticipantForm(forms.Form):
