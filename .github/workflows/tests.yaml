@@ -1,7 +1,7 @@
 name: Tests
 
 env:
-  CI=1
+  - CI="1"
 
 on: [push, pull_request]
 
@@ -26,3 +26,10 @@ jobs:
           docker-compose up -d
       - name: Unit Tests
         run: poetry run python ./manage.py test
+      - name: Test w/ Production Dump
+        run: |
+          curl -fsSL -o /tmp/production-fixture.json ${{ secrets.PRODUCTION_FIXTURES_URL }}
+          poetry run ./manage.py testserver fixtures/production.json --noinput &
+          npm install
+          npm run cy:test
+

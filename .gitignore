@@ -133,3 +133,7 @@ dmypy.json
 
 .envrc
 creds/
+
+node_modules/
+fixtures/
+cypress/videos/
