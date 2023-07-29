@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gary
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: gary
+  template:
+    metadata:
+      labels:
+        app: gary
+    spec:
+      containers:
+      - image: ghcr.io/parrotmac/gary:latest
+        name: gary
+        ports:
+        - containerPort: 8000
