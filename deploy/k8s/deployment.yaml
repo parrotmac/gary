@@ -20,7 +20,7 @@ spec:
         - containerPort: 8000
         env:
         - name: ALLOWED_HOSTS
-          value: *
+          value: '*'
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
