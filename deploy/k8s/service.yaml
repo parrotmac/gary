@@ -6,13 +6,5 @@ spec:
   ports:
   - port: 8000
     targetPort: 8000
-  env:
-  - name: ALLOWED_HOSTS
-    value: *
-  - name: DATABASE_URL
-      valueFrom:
-        secretKeyRef:
-          name: db-credentials
-          key: url
   selector:
     app: gary
