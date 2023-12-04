@@ -29,6 +29,7 @@ a:link, a:visited {
 
 .profile {
     display: flex;
+    align-items: center;
 }
 
 .profile-photo {
