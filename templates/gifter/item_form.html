@@ -4,7 +4,7 @@
     {% if request.user == wishlist.owner %}
         <h2>Adding to my wishlist</h2>
     {% else %}
-        <h2>Suggesting for {{ wishlist.owner }}'s wishlist</h2>
+        <h2>Suggesting for {{ wishlist.owner }}'s wishlist <em>"{{ wishlist.title }}"</em></h2>
     {% endif %}
     {% if object %}
         <form action="{% url "item_update" wishlist_pk=request.resolver_match.kwargs.wishlist_pk pk=object.pk %}" method="post">
