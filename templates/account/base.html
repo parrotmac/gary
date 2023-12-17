@@ -48,16 +48,15 @@
 {% block outside_container %}
     <div class="container">
         <div class="row">
-            <div class="col mt-1">
+            <div class="col mt-2">
                 {% bootstrap_messages %}
             </div>
         </div>
     </div>
-<div class="content">
+    <div class="container">
     <div class="row">
-        <div class="col col-md-4 offset-md-4 sm-mx-1">
-            {% block content %}
-            {% endblock %}
+        <div class="col col-md-4 offset-md-4">
+            {% block content %}{% endblock %}
         </div>
     </div>
 </div>

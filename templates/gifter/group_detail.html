@@ -8,8 +8,6 @@
             <li class="breadcrumb-item active" aria-current="page">{{ group.name }}</li>
         </ol>
     </nav>
-    <div>
-
     <div class="d-flex justify-content-between mt-3">
         <p class="fs-2">{{ group.name }}</p>
         <div>
@@ -22,16 +20,21 @@
         <img class="participant-icon" src="{{ participant.display_photo }}" alt="{{ user }} Profile Picture" />
     </div>
     {% endfor %}
+    {% for pending_invite in pending_invites %}
+    <div class="participant-item pending-invite" data-bs-toggle="tooltip" data-bs-placement="top" title="Pending Invitation: {{ pending_invite.destination_email }}" data-email="{{ pending_invite.destination_email }}">
+        <img class="participant-icon" src="https://ui-avatars.com/api/?name={{ pending_invite.destination_email }}" alt="{{ pending_invite.email_address }} Profile Picture" />
+    </div>
+    {% endfor %}
         <div class="participant-item participant-add" data-bs-toggle="tooltip" data-bs-placement="top" title="Invite Participant">
         <button class="btn btn-outline-light participant-add-button" data-bs-toggle="modal" data-bs-target="#inviteModal">
             <i class="bi bi-person-plus-fill"></i>
         </button>
         </div>
     </div>
-    {% for wl in group.wishlist_set.all %}
+    {% for wl in group.wishlists.all %}
         <div class="card bg-dark mb-2">
             <div class="card-body">
-                <a href="{% url "wishlist_detail" group_pk=group.pk pk=wl.id %}">{{ wl.title }}</a>
+                <a href="{% url "wishlist_detail_with_group" group_pk=group.pk pk=wl.id %}">{{ wl.title }}</a>
             </div>
         </div>
     {% endfor %}

@@ -30,12 +30,14 @@ a:link, a:visited {
 .profile {
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .profile-photo {
     max-height: 40px;
     max-width: 40px;
     border-radius: 100px;
+    margin-right: 0.5em;
 }
 
 .socialaccount_providers {

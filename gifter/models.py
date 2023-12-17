@@ -87,10 +87,10 @@ class User(AbstractUser, CommonBaseClass):
 class Wishlist(CommonBaseClass):
     title = models.CharField(max_length=120, blank=False, null=False)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    groups = models.ManyToManyField(Group, related_name="wishlists")
 
     def __str__(self):
-        return f"Wishlist for {self.owner} on {self.group.name}"
+        return f"Wishlist for {self.owner} (in {self.groups.count()} groups)"
 
 
 class Item(CommonBaseClass):
