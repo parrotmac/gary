@@ -5,7 +5,16 @@
     {% for wishlist in object_list %}
         <div class="card bg-dark mb-2">
             <div class="card-body">
-                <a href="{% url "wishlist_detail" group_pk=wishlist.group.pk pk=wishlist.id %}">{{ wishlist.group.name }} - {{ wishlist.title }}</a>
+                <a href="{% url "wishlist_detail" pk=wishlist.id %}">{{ wishlist.title }}</a> -
+                {% if wishlist.groups.count == 0 %}
+                    <small>Not shared</small>
+                {% endif %}
+                {% if wishlist.groups.count == 1 %}
+                    <small>Shared in {{  wishlist.groups.first.name }}</small>
+                {% endif %}
+                {% if wishlist.groups.count > 1 %}
+                    <small>Shared in {{  wishlist.groups.count }} groups</small>
+                {% endif %}
             </div>
         </div>
     {% endfor %}

@@ -173,6 +173,7 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_USER_DISPLAY = "gifter.utils.user_display"
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",

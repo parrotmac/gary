@@ -13,23 +13,19 @@
                 <h5 class="card-title">{% trans "Sign In" %}</h5>
 
                 {% get_providers as socialaccount_providers %}
-
                 {% if socialaccount_providers %}
-                    <p class="card-text">{% blocktrans with site.name as site_name %}Please sign in with one
-                        of your existing accounts or <a href="{{ signup_url }}">sign up</a>
-                        for an account.{% endblocktrans %}</p>
-
                     <div class="socialaccount_ballot">
                         <ul class="socialaccount_providers">
                             {% include "socialaccount/snippets/provider_list.html" with process="login" %}
                         </ul>
                     </div>
                     {% include "socialaccount/snippets/login_extra.html" %}
-                {% else %}
-                    <p class="card-text">{% blocktrans %}If you have not created an account yet, then please
-                        <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
                 {% endif %}
+            
                 <hr/>
+                {% blocktrans %}
+                <p class="card-text">First time here? <a class="btn btn-sm btn-outline-primary" href="{{ signup_url }}">Sign Up</a></p>
+                {% endblocktrans %}
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 {% if redirect_field_value %}

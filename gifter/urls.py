@@ -22,7 +22,7 @@ from gifter.views import (
     GroupDeleteView,
     SendInviteFormView,
     MyWishlistsListView,
-    ItemDeleteView,
+    ItemDeleteView, UpdateWishlistOptionsView, ClaimListView,
 )
 
 urlpatterns = [
@@ -41,6 +41,11 @@ urlpatterns = [
     path(
         "groups/<str:group_pk>/wishlists/<str:pk>",
         WishlistDetailView.as_view(),
+        name="wishlist_detail_with_group",
+    ),
+    path(
+        "wishlists/<str:pk>",
+        WishlistDetailView.as_view(),
         name="wishlist_detail",
     ),
     path(
@@ -49,9 +54,14 @@ urlpatterns = [
         name="wishlist_update",
     ),
     path(
-        "groups/<str:group_pk>/wishlists/<str:pk>/delete",
+        "wishlists/<str:pk>/delete",
         WishlistDeleteView.as_view(),
         name="wishlist_delete",
+    ),
+    path(
+        "groups/<int:group_pk>/wishlists/<str:pk>/delete",
+        WishlistDeleteView.as_view(),
+        name="wishlist_delete_with_group",
     ),
     path("wishlists", MyWishlistsListView.as_view(), name="my_wishlists"),
     path(
@@ -75,6 +85,16 @@ urlpatterns = [
         name="claim_create",
     ),
     path(
+        "wishlists/<str:wishlist_pk>/items/<str:item_pk>/claims",
+        ClaimListView.as_view(),
+        name="claim_list",
+    ),
+    path(
+        "groups/<str:group_pk>/wishlists/<str:wishlist_pk>/items/<str:item_pk>/claims",
+        ClaimListView.as_view(),
+        name="claim_list_with_group",
+    ),
+    path(
         "wishlists/<str:wishlist_pk>/items/<str:item_pk>/claims/<str:pk>",
         ClaimUpdateView.as_view(),
         name="claim_update",
@@ -84,6 +104,14 @@ urlpatterns = [
         ClaimDeleteView.as_view(),
         name="claim_delete",
     ),
+    path(
+        "wishlists/<str:pk>/add-to-group",
+        UpdateWishlistOptionsView.as_view(),
+        name="add_wishlist_to_group"),
+    path(
+        "wishlists/<str:pk>/remove-from-group",
+        UpdateWishlistOptionsView.as_view(),
+        name="remove_wishlist_from_group"),
     path(
         "invitations/incoming/<str:token>",
         incoming_invitation,

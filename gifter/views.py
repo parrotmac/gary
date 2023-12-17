@@ -7,7 +7,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
-from django.http import HttpResponse
+from django.db import transaction
+from django.db.models import Q
+from django.http import HttpResponse, HttpRequest
 from django.shortcuts import redirect
 from django.template.defaultfilters import pluralize
 from django.urls import reverse
@@ -98,6 +100,9 @@ class GroupDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(GroupDetailView, self).get_context_data(**kwargs)
         context["send_invite_form"] = InviteParticipantForm(self.request.GET)
+        context["pending_invites"] = GroupInvitation.objects.filter(
+            ~Q(destination_email__in=[self.object.user_set.all().values_list("email", flat=True)]), target_group=self.object, verified_at__isnull=True,
+        )
         return context
 
 
@@ -121,6 +126,10 @@ class WishlistDetailView(LoginRequiredMixin, DetailView):
         context["my_claims"] = Claim.objects.filter(
             owner=me, item__wishlist=self.object.id
         )
+        context["group_pk"] = self.kwargs.get("group_pk")
+        context["group_name"] = self.object.groups.get(
+            id=context["group_pk"]
+        ) if context["group_pk"] else None
 
         return context
 
@@ -149,15 +158,29 @@ class WishlistCreateView(LoginRequiredMixin, CreateView):
         }
 
     def get_success_url(self):
+        group_pk = self.kwargs.get("group_pk")
+        if group_pk:
+            return reverse(
+                "wishlist_detail_with_group",
+                kwargs={
+                    "group_pk": group_pk,
+                    "pk": str(self.object.id),
+                },
+            )
         return reverse(
             "wishlist_detail",
-            kwargs={"group_pk": str(self.object.group.id), "pk": str(self.object.id)},
+            kwargs={
+                "pk": str(self.object.id),
+            },
         )
 
     def form_valid(self, form):
-        user = self.request.user
-        form.instance.owner = user
-        form.instance.group_id = self.request.resolver_match.kwargs["group_pk"]
+        with transaction.atomic():
+            user = self.request.user
+            form.instance.owner = user
+            form.instance.save()
+            group_pk = self.request.resolver_match.kwargs["group_pk"]
+            form.instance.groups.add(group_pk)
         return super(WishlistCreateView, self).form_valid(form)
 
 
@@ -188,11 +211,17 @@ class WishlistDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "gifter/wishlist_confirm_delete.html"
 
     def get_success_url(self):
+        group_pk = self.kwargs.get("group_pk")
+        if group_pk:
+            return reverse(
+                "group_detail",
+                kwargs={
+                    "pk": group_pk,
+                },
+            )
+
         return reverse(
-            "group_detail",
-            kwargs={
-                "pk": self.object.group.id,
-            },
+            "my_wishlists"
         )
 
 
@@ -207,11 +236,18 @@ class ItemCreateView(LoginRequiredMixin, CreateView):
         return context
 
     def get_success_url(self):
+        if group_pk := self.kwargs.get("group_pk"):
+            return reverse(
+                "wishlist_detail_with_group",
+                kwargs={
+                    "group_pk": group_pk,
+                    "pk": str(self.object.wishlist.id),
+                },
+            )
         return reverse(
             "wishlist_detail",
             kwargs={
                 "pk": str(self.object.wishlist.id),
-                "group_pk": self.object.wishlist.group_id,
             },
         )
 
@@ -239,11 +275,18 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
     def get_success_url(self):
+        if group_pk := self.kwargs.get("group_pk"):
+            return reverse(
+                "wishlist_detail_with_group",
+                kwargs={
+                    "group_pk": group_pk,
+                    "pk": str(self.object.wishlist.id),
+                },
+            )
         return reverse(
             "wishlist_detail",
             kwargs={
                 "pk": str(self.object.wishlist.id),
-                "group_pk": self.object.wishlist.group_id,
             },
         )
 
@@ -253,11 +296,18 @@ class ItemDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "gifter/item_confirm_delete.html"
 
     def get_success_url(self):
+        if group_pk := self.kwargs.get("group_pk"):
+            return reverse(
+                "wishlist_detail_with_group",
+                kwargs={
+                    "group_pk": group_pk,
+                    "pk": str(self.object.wishlist.id),
+                },
+            )
         return reverse(
             "wishlist_detail",
             kwargs={
                 "pk": self.object.wishlist.id,
-                "group_pk": self.object.wishlist.group_id,
             },
         )
 
@@ -276,11 +326,19 @@ class ClaimCreateView(LoginRequiredMixin, CreateView):
         return context
 
     def get_success_url(self):
+        group_pk = self.kwargs.get("group_pk")
+        if group_pk:
+            return reverse(
+                "wishlist_detail_with_group",
+                kwargs={
+                    "group_pk": group_pk,
+                    "pk": str(self.object.item.wishlist.id),
+                },
+            )
         return reverse(
             "wishlist_detail",
             kwargs={
                 "pk": str(self.object.item.wishlist.id),
-                "group_pk": self.object.item.wishlist.group_id,
             },
         )
 
@@ -308,24 +366,58 @@ class ClaimUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
     def get_success_url(self):
+        if group_pk := self.kwargs.get("group_pk"):
+            return reverse(
+                "wishlist_detail_with_group",
+                kwargs={
+                    "group_pk": group_pk,
+                    "pk": str(self.object.item.wishlist.id),
+                },
+            )
         return reverse(
             "wishlist_detail",
             kwargs={
                 "pk": str(self.object.item.wishlist.id),
-                "group_pk": self.object.item.wishlist.group_id,
             },
         )
+
+
+class ClaimListView(LoginRequiredMixin, ListView):
+    model = Claim
+    template_name = "gifter/claim_list.html"
+
+    def get_queryset(self):
+        return Claim.objects.filter(item=self.kwargs["item_pk"])
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        group_pk = self.kwargs.get("group_pk")
+        context["group_pk"] = group_pk
+        if group_pk:
+            context["group"] = Group.objects.get(
+                id=group_pk
+            ) if group_pk else None
+        context["item"] = Item.objects.get(id=self.kwargs["item_pk"])
+        context["wishlist"] = Wishlist.objects.get(id=self.kwargs["wishlist_pk"])
+        return context
 
 
 class ClaimDeleteView(LoginRequiredMixin, DeleteView):
     model = Claim
 
     def get_success_url(self):
+        if group_pk := self.kwargs.get("group_pk"):
+            return reverse(
+                "wishlist_detail_with_group",
+                kwargs={
+                    "group_pk": group_pk,
+                    "pk": str(self.object.item.wishlist.id),
+                },
+            )
         return reverse(
             "wishlist_detail",
             kwargs={
                 "pk": str(self.object.item.wishlist.id),
-                "group_pk": self.object.item.wishlist.group_id,
             },
         )
 
@@ -436,3 +528,42 @@ class SendInviteFormView(FormView):
         )
 
         return super().form_valid(form)
+
+
+class UpdateWishlistOptionsView(LoginRequiredMixin, TemplateView):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["wishlist"] = Wishlist.objects.get(id=self.kwargs["pk"])
+        return context
+
+    def post(self, request: HttpRequest, *args, **kwargs):
+        wishlist = Wishlist.objects.get(id=self.kwargs["pk"])
+        if request.POST.get("action") == "add_wishlist_to_group":
+            wishlist.groups.add(request.POST.get("group_pk"))
+            messages.add_message(
+                request,
+                level=messages.SUCCESS,
+                message=f"Successfully added wishlist to group",
+                fail_silently=True,
+            )
+        elif request.POST.get("action") == "remove_wishlist_from_group":
+            wishlist.groups.remove(request.POST.get("group_pk"))
+            messages.add_message(
+                request,
+                level=messages.SUCCESS,
+                message=f"Successfully removed wishlist from group",
+                fail_silently=True,
+            )
+
+        if next_url := request.POST.get("next"):
+            return redirect(to=next_url)
+
+        return redirect(
+            to=reverse(
+                "wishlist_detail",
+                kwargs={
+                    "pk": str(wishlist.id),
+                },
+            )
+        )

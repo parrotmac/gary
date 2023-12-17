@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block head_title %}Claims for {{ item.title }}{% endblock %}
+{% block content %}
+    <nav class="mt-3" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            {% if group_pk %}
+                <li class="breadcrumb-item"><a href="{% url "group_list" %}">Groups</a></li>
+                <li class="breadcrumb-item"><a href="{% url "group_detail" pk=group_pk %}">{{ group.name }}</a>
+                </li>
+            {% endif %}
+            <li class="breadcrumb-item" aria-current="page">
+                <a href="{% url "wishlist_detail" pk=wishlist.pk %}">{{ wishlist.title }}</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Claims</li>
+        </ol>
+    </nav>
+    <h1>Claims for {{ item.title }}</h1>
+    <p>The following users have claimed this item:</p>
+    {% for claim in claim_list %}
+        <div class="card bg-dark mb-2">
+            <div class="card-header">
+                <p class="text-white">
+                    {{ claim.owner.display_name }}
+                </p>
+            </div>
+            <div class="card-body">
+                {% if claim.description %}
+                {{ claim.description }}
+                {% else %}
+                <em>No description</em>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

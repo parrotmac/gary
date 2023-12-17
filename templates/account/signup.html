@@ -1,0 +1,37 @@
+{% extends "account/base.html" %}
+{% load bootstrap5 %}
+{% load i18n %}
+{% load account socialaccount %}
+
+{% block head_title %}{% trans "Signup" %}{% endblock %}
+
+{% block content %}
+    <div class="card bg-dark mt-3">
+        <div class="card-body">
+            <form class="signup form-signin" id="signup_form" method="post" action="{% url 'account_signup' %}">
+                <h5 class="card-title">{% trans "Sign Up" %}</h5>
+
+                {% get_providers as socialaccount_providers %}
+                {% if socialaccount_providers %}
+                    <div class="socialaccount_ballot">
+                        <ul class="socialaccount_providers">
+                            {% include "socialaccount/snippets/provider_list.html" with process="signup" %}
+                        </ul>
+                    </div>
+                    {% include "socialaccount/snippets/login_extra.html" %}
+                {% endif %}
+            
+                <hr/>
+                <p class="card-text">
+                {% blocktrans %}<p class="card-text">Already have an account? <a class="btn btn-sm btn-outline-primary" href="{{ login_url }}">Sign In &raquo;</a></p>{% endblocktrans %}
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {% if redirect_field_value %}
+                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                {% endif %}
+                <button class="btn btn-lg btn-primary btn-block" type="submit">{% trans "Sign Up" %}</button>
+                <p class="mt-5 mb-3 text-muted">&copy; Gary The Christmas Gift Fairy 2023</p>
+            </form>
+        </div>
+    </div>
+{% endblock %}
