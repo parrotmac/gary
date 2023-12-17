@@ -24,21 +24,21 @@ class TestWishlist(TestCase):
         Group.objects.create(name="The Bears")
 
     def test_wishlist_creation(self):
-        Wishlist.objects.create(
+        wl1 = Wishlist.objects.create(
             title="Mama's Christmas 2020",
             owner=self.users["mama-bear"],
-            group=Group.objects.get(name="The Bears"),
         )
-        Wishlist.objects.create(
+        wl1.groups.add(Group.objects.get(name="The Bears"))
+        wl2 = Wishlist.objects.create(
             title="Papa's Christmas 2020",
             owner=self.users["papa-bear"],
-            group=Group.objects.get(name="The Bears"),
         )
-        Wishlist.objects.create(
+        wl2.groups.add(Group.objects.get(name="The Bears"))
+        wl3 = Wishlist.objects.create(
             title="Baby's Christmas 2020",
             owner=self.users["baby-bear"],
-            group=Group.objects.get(name="The Bears"),
         )
+        wl3.groups.add(Group.objects.get(name="The Bears"))
         self.assertEqual(Wishlist.objects.count(), 3)
         self.assertEqual(
             Wishlist.objects.filter(owner=self.users["mama-bear"]).count(), 1
