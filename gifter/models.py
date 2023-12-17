@@ -1,4 +1,6 @@
 import hashlib
+from dataclasses import dataclass
+from typing import Any
 import uuid
 import secrets
 
@@ -84,8 +86,19 @@ class User(AbstractUser, CommonBaseClass):
         return self.display_name
 
 
+def with_graphql(field):
+    setattr(field, "__graphql_enabled", True)
+    return field
+
+
 class Wishlist(CommonBaseClass):
-    title = models.CharField(max_length=120, blank=False, null=False)
+
+    @dataclass
+    class GQLMeta:
+        enabled = True
+        auth_check_via = "groups"
+
+    title = with_graphql(models.CharField(max_length=120, blank=False, null=False))
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
 
