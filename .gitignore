@@ -137,3 +137,6 @@ creds/
 node_modules/
 fixtures/
 cypress/videos/
+
+.env*
+.secrets/
