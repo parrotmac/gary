@@ -36,12 +36,11 @@ jobs:
       - name: Install deps
         run: |
           poetry install
-      - name: Run Redis
-        run: |
-          docker compose up -d redis
       - name: Unit Tests
         run: poetry run python ./manage.py test
       - name: Test w/ Production Dump
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
         run: |
           curl -fsSL -o /tmp/production-fixture.json ${{ secrets.PRODUCTION_FIXTURES_URL }}
           poetry run ./manage.py testserver /tmp/production-fixture.json --noinput &
