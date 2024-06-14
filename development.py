@@ -84,25 +84,39 @@ def clone_database_from_pgdump_archive(list_sources, from_db, args, database_url
         if args.verbose:
             print(result.stdout.decode())
 
-def clone_database_from_live_instance(from_db, database_url, remote_db_envvar):
+def clone_database_from_live_instance(from_db, database_url, remote_db_envvar, container_context):
     try:
         if remote_db_envvar:
             remote_db_url = os.getenv(remote_db_envvar)
         else:
             remote_db_url = json.loads(Path(".secrets/database-credentials.json").read_bytes())["by_key"][from_db]
 
-        subprocess.run(
-            [
-                "/usr/bin/env",
-                "bash",
-                "-c",
-                f"pg_dump {remote_db_url} | psql {database_url}",
-            ],
-            check=True,
-            stdout=sys.stdout,
-            stderr=sys.stderr,
-            stdin=sys.stdin,
-        )
+        if container_context:
+            subprocess.run(
+                [
+                    "/usr/bin/env",
+                    "docker",
+                    "exec",
+                    "-i",
+                    container_context,
+                    "bash",
+                    "-c",
+                    f"pg_dump {remote_db_url} | psql {database_url}",
+                ]
+            )
+        else:
+            subprocess.run(
+                [
+                    "/usr/bin/env",
+                    "bash",
+                    "-c",
+                    f"pg_dump {remote_db_url} | psql {database_url}",
+                ],
+                check=True,
+                stdout=sys.stdout,
+                stderr=sys.stderr,
+                stdin=sys.stdin,
+            )
     except KeyError:
         print(f"Database {from_db} not found in database-credentials.json")
         sys.exit(1)
@@ -152,6 +166,12 @@ def main():
         type=str,
         help="The environment variable containing the remote database URL. Skips the database-credentials.json file.",
     )
+    database_cloner.add_argument(
+        "--container-context",
+        dest="_container_context",
+        type=str,
+        help="Container ID or name to run the psql & pg_dump commands in."
+    )
 
     args = parser.parse_args()
 
@@ -172,7 +192,8 @@ def main():
                     else:
                         from_db = args._from
                         remote_db_envvar = args._remote_db_envvar
-                        clone_database_from_live_instance(from_db, database_url, remote_db_envvar)
+                        container_context = args._container_context
+                        clone_database_from_live_instance(from_db, database_url, remote_db_envvar, container_context)
 
         case "secrets":
             match args.action:

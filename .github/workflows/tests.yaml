@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:14-alpine
+        image: postgres:15-alpine
         env:
           POSTGRES_DB: postgres
           POSTGRES_PASSWORD: postgres
@@ -47,7 +47,8 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
           PRODUCTION_DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
         run: |
-          poetry run python development.py database clone --remote-db-envvar PRODUCTION_DATABASE_URL
+          docker ps --all
+          poetry run python development.py database clone --remote-db-envvar PRODUCTION_DATABASE_URL --container-context postgres
           poetry run ./manage.py migrate
           poetry run ./manage.py set_user_password parrotmac@gmail.com test
           poetry run ./manage.py runserver &
