@@ -4,13 +4,12 @@ services:
     image: postgres:16.1-alpine3.19
     restart: always
     environment:
-      POSTGRES_HOST_AUTH_METHOD: trust
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: postgres
-#      POSTGRES_DB: postgres
+      POSTGRES_USER: gary
+      POSTGRES_PASSWORD: w1shl1st
+      POSTGRES_DB: gary_db
     ports:
-      - "5900:5432"
-  redis:
-    image: redis:alpine3.17
-    ports:
-      - "6379:6379"
+      - "5932:5432"
+  # valkey:
+  #   image: valkey/valkey:7-alpine3.19
+  #   ports:
+  #     - "6379:6379"

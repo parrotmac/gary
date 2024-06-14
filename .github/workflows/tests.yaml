@@ -3,7 +3,11 @@ name: Tests
 env:
   CI: "1"
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
   tests:
@@ -28,7 +32,7 @@ jobs:
       - name: Python Poetry Action
         uses: abatilo/actions-poetry@v2.1.6
         with:
-          poetry-version: 1.3.1
+          poetry-version: 1.8.2
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10.10'
@@ -36,15 +40,17 @@ jobs:
       - name: Install deps
         run: |
           poetry install
-      - name: Run Redis
-        run: |
-          docker compose up -d redis
       - name: Unit Tests
         run: poetry run python ./manage.py test
       - name: Test w/ Production Dump
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+          PRODUCTION_DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
         run: |
-          curl -fsSL -o /tmp/production-fixture.json ${{ secrets.PRODUCTION_FIXTURES_URL }}
-          poetry run ./manage.py testserver /tmp/production-fixture.json --noinput &
+          poetry run python development.py database clone --remote-db-envvar PRODUCTION_DATABASE_URL --container-context $(docker ps -q)
+          poetry run ./manage.py migrate
+          poetry run ./manage.py set_user_password parrotmac@gmail.com test
+          poetry run ./manage.py runserver &
           npm install
           npm run cy:test
 
