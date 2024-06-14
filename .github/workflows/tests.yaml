@@ -47,8 +47,7 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
           PRODUCTION_DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
         run: |
-          docker ps --all
-          poetry run python development.py database clone --remote-db-envvar PRODUCTION_DATABASE_URL --container-context postgres
+          poetry run python development.py database clone --remote-db-envvar PRODUCTION_DATABASE_URL --container-context $(docker ps -q)
           poetry run ./manage.py migrate
           poetry run ./manage.py set_user_password parrotmac@gmail.com test
           poetry run ./manage.py runserver &
