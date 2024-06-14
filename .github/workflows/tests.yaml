@@ -48,6 +48,7 @@ jobs:
           PRODUCTION_DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
         run: |
           poetry run python development.py database clone --remote-db-envvar PRODUCTION_DATABASE_URL
+          poetry run ./manage.py migrate
           poetry run ./manage.py runserver &
           npm install
           npm run cy:test
