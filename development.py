@@ -84,9 +84,13 @@ def clone_database_from_pgdump_archive(list_sources, from_db, args, database_url
         if args.verbose:
             print(result.stdout.decode())
 
-def clone_database_from_live_instance(from_db, database_url):
+def clone_database_from_live_instance(from_db, database_url, remote_db_envvar):
     try:
-        remote_db_url = json.loads(Path(".secrets/database-credentials.json").read_bytes())["by_key"][from_db]
+        if remote_db_envvar:
+            remote_db_url = os.getenv(remote_db_envvar)
+        else:
+            remote_db_url = json.loads(Path(".secrets/database-credentials.json").read_bytes())["by_key"][from_db]
+
         subprocess.run(
             [
                 "/usr/bin/env",
@@ -142,6 +146,12 @@ def main():
         action="store_true",
         help="Restore from a pgdump archive instead of a live instance.",
     )
+    database_cloner.add_argument(
+        "--remote-db-envvar",
+        dest="_remote_db_envvar",
+        type=str,
+        help="The environment variable containing the remote database URL. Skips the database-credentials.json file.",
+    )
 
     args = parser.parse_args()
 
@@ -161,7 +171,8 @@ def main():
                         clone_database_from_pgdump_archive(list_sources, from_db, args, database_url)
                     else:
                         from_db = args._from
-                        clone_database_from_live_instance(from_db, database_url)
+                        remote_db_envvar = args._remote_db_envvar
+                        clone_database_from_live_instance(from_db, database_url, remote_db_envvar)
 
         case "secrets":
             match args.action:
@@ -218,57 +229,6 @@ def main():
                         except subprocess.CalledProcessError:
                             print(f"Failed to get {secret_file}")
                             sys.exit(1)
-
-                    # secrets_cache_location = os.path.join(BASE_DIR, ".secrets")
-                    # if not os.path.exists(secrets_cache_location):
-                    #     os.makedirs(secrets_cache_location)
-                    # for filename in [
-                    #     "database-credentials.json",
-                    # ]:
-                    #     # calling directly (not in a sub-shell) to retain current login state
-                    #     op_subprocess = subprocess.run(
-                    #         [
-                    #             "op",
-                    #             "--account=my.1password.com",
-                    #             "--vault=Gary",
-                    #             "document",
-                    #             "get",
-                    #             filename,
-                    #         ],
-                    #         check=True,
-                    #         stderr=sys.stderr,
-                    #         stdout=subprocess.PIPE,
-                    #         stdin=sys.stdin,
-                    #     )
-                    #     op_stdout = op_subprocess.stdout
-                    #     if op_stdout.strip() == "":
-                    #         raise Exception(
-                    #             "op unexpectedly returned an empty document"
-                    #         )
-
-                    #     output_fn = Path(f"{secrets_cache_location}/{filename}")
-                    #     output_fn.write_bytes(op_stdout)
-                    # for envfile in [
-                    #     ".env",
-                    # ]:
-                    #     if os.path.exists(envfile):
-                    #         if (
-                    #             input(
-                    #                 f"{envfile} already exists, overwrite? [y/N] "
-                    #             ).lower()
-                    #             != "y"
-                    #         ):
-                    #             print(f"Skipping {envfile}")
-                    #             continue
-                    #     subprocess.run(
-                    #         [
-                    #             "/usr/bin/env",
-                    #             "bash",
-                    #             "-c",
-                    #             f"op --account my.1password.com --vault Gary document get {envfile} > {envfile}",
-                    #         ],
-                    #         check=True,
-                    #     )
                 case _:
                     secrets_parser.print_help()
         case _:
