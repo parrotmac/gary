@@ -21,7 +21,7 @@ const regularLogin = (name: string, password: string) => {
 
 describe("Can Login To Admin Site", () => {
   beforeEach(() => {
-    adminLogin("isaac", "test");
+    adminLogin("parrotmac@gmail.com", "test");
   });
 
   it("should be able to login as admin", () => {
@@ -32,7 +32,7 @@ describe("Can Login To Admin Site", () => {
 
 describe("Can login to regular site", () => {
   beforeEach(() => {
-    regularLogin("isaac", "test");
+    regularLogin("parrotmac@gmail.com", "test");
   });
 
   it("should be able to login and create a new list wishlist", () => {
