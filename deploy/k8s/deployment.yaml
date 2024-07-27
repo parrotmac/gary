@@ -16,6 +16,7 @@ spec:
       containers:
       - image: ghcr.io/parrotmac/gary:latest
         name: gary
+        terminationMessagePolicy: "FallbackToLogsOnError"
         ports:
         - containerPort: 8000
         env:
